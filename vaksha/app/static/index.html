@@ -1,518 +1,404 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaksha — VoiceShield Real-Time Voice Integrity Platform</title>
+    <title>SatyaVani · Voice integrity for high-risk approvals</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="soc-container">
-        <!-- Top Navbar -->
-        <header class="soc-header">
-            <div class="brand">
-                <div class="logo-mark">V</div>
-                <div class="brand-text">
-                    <h1>VAKSHA <span class="hindi-text">(वाक्-क्षा)</span></h1>
-                    <span class="sub">VoiceShield Enterprise Platform</span>
+    <div class="satya-app" data-testid="satya-app-shell">
+        <!-- Sidebar Navigation -->
+        <aside class="satya-sidebar" data-testid="satya-sidebar">
+            <div class="brand-lockup" data-testid="brand-lockup">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </div>
+                <div>
+                    <div class="brand-name" data-testid="brand-name">Satya<span>Vani</span></div>
+                    <div class="brand-caption" data-testid="brand-caption">Voice integrity platform</div>
                 </div>
             </div>
-            <div class="tenant-badge">
-                <span class="pulse-dot green"></span>
-                <span>Union Bank · Demo Tenant</span>
+
+            <div class="sidebar-section-label" data-testid="workspace-label">Workspace</div>
+
+            <nav class="sidebar-nav" aria-label="Primary navigation" data-testid="primary-navigation">
+                <button class="sidebar-nav-item is-active" data-tab="tab-fraud" onclick="switchTab('tab-fraud')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Fraud Desk</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-live" onclick="switchTab('tab-live')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
+                    <span>Live Call</span>
+                    <span class="nav-live-badge">LIVE</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-analyze" onclick="switchTab('tab-analyze')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span>Analyze Voice</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-trusted" onclick="switchTab('tab-trusted')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Enroll Voice</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-audit" onclick="switchTab('tab-audit')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Audit Log</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-spacer"></div>
+
+            <div class="sidebar-secure-card" data-testid="sidebar-secure-card">
+                <div class="secure-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div>
+                    <strong data-testid="secure-card-title">Protected workspace</strong>
+                    <span data-testid="secure-card-copy">SOC 2 controls active</span>
+                </div>
             </div>
-            <div class="persona-selector">
-                <label for="persona-select">Active User:</label>
-                <select id="persona-select">
-                    <option value="priya.nair@unionbank.in">Priya Nair (Agent)</option>
-                    <option value="kavita.rao@unionbank.in">Kavita Rao (HR)</option>
-                    <option value="arjun.mehta@unionbank.in">Arjun Mehta (SOC Analyst)</option>
-                    <option value="nisha.patel@unionbank.in">Nisha Patel (CISO)</option>
-                </select>
+
+            <div class="sidebar-user" data-testid="sidebar-user-button">
+                <span class="avatar avatar-small">PN</span>
+                <span class="sidebar-user-copy">
+                    <strong data-testid="sidebar-officer-name">Priya Nair</strong>
+                    <span data-testid="sidebar-officer-role">Risk operations · Union Bank</span>
+                </span>
             </div>
-        </header>
+        </aside>
 
-        <!-- Navigation Tabs -->
-        <nav class="soc-tabs">
-            <button class="tab-btn active" data-tab="tab-overview">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                Overview
-            </button>
-            <button class="tab-btn" data-tab="tab-analyze">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                Analyze Voice
-            </button>
-            <button class="tab-btn hidden" id="btn-tab-result" data-tab="tab-result">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                Analysis Result
-            </button>
-            <button class="tab-btn" data-tab="tab-live">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                Live Detection
-            </button>
-            <button class="tab-btn" data-tab="tab-trusted">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                Trusted Voices
-            </button>
-            <button class="tab-btn" data-tab="tab-fraud">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                Fraud Desk
-            </button>
-            <button class="tab-btn" data-tab="tab-audit">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                Audit Trail
-            </button>
-        </nav>
+        <!-- Main Content Area -->
+        <section class="satya-main">
+            <!-- Topbar -->
+            <header class="topbar" data-testid="topbar">
+                <div class="breadcrumb" data-testid="breadcrumb">
+                    <span>Union Bank</span>
+                    <span class="breadcrumb-divider">/</span>
+                    <strong id="topbar-page-title">Fraud desk</strong>
+                </div>
 
-        <!-- Main Content Body -->
-        <main class="soc-content">
+                <div class="topbar-actions">
+                    <div class="system-live" data-testid="system-live-indicator">
+                        <span class="pulse-dot"></span>
+                        LIVE <span class="system-live-copy">monitoring active</span>
+                    </div>
+                    <div class="topbar-divider"></div>
+                    <button class="topbar-org" data-testid="org-switcher-button">
+                        <span class="org-avatar">UB</span>
+                        <span>Union Bank · Demo</span>
+                    </button>
+                    <span class="avatar avatar-top">PN</span>
+                </div>
+            </header>
 
-            <!-- TAB 1: OVERVIEW DASHBOARD -->
-            <section id="tab-overview" class="tab-panel active">
-                <div class="soc-kpi-grid">
-                    <div class="kpi-card">
-                        <span class="kpi-label">TOTAL CALLS INSPECTED</span>
-                        <span class="kpi-val" id="ov-total-calls">2</span>
-                    </div>
-                    <div class="kpi-card danger">
-                        <span class="kpi-label">CLONES BLOCKED</span>
-                        <span class="kpi-val" id="ov-blocked">1</span>
-                    </div>
-                    <div class="kpi-card warning">
-                        <span class="kpi-label">STEP-UP VERIFICATIONS</span>
-                        <span class="kpi-val" id="ov-stepup">0</span>
-                    </div>
-                    <div class="kpi-card success">
-                        <span class="kpi-label">ENROLLED VOICEPRINTS</span>
-                        <span class="kpi-val" id="ov-enrolled-count">2</span>
+            <main class="satya-content" data-testid="satya-main-content">
+
+                <!-- VIEW 1: FRAUD DESK (DEFAULT / HERO DASHBOARD) -->
+                <div id="tab-fraud" class="tab-panel active">
+                    <div class="desk-page" data-testid="fraud-desk-page">
+                        <div class="page-heading-row" data-testid="fraud-desk-heading-row">
+                            <div>
+                                <div class="eyebrow"><span class="eyebrow-line"></span>High-risk call protection</div>
+                                <h1 data-testid="fraud-desk-heading">Fraud desk</h1>
+                                <p data-testid="fraud-desk-description">Real-time voice integrity for sensitive approvals.</p>
+                            </div>
+                            <div class="heading-meta" data-testid="heading-meta">
+                                <span class="live-call-chip"><span class="pulse-dot"></span>Live call</span>
+                                <span class="last-updated">Updated just now</span>
+                            </div>
+                        </div>
+
+                        <section class="desk-grid" data-testid="fraud-desk-grid">
+                            <!-- Left Column: Active Call Context Card -->
+                            <div class="desk-left-column">
+                                <div class="glass-card call-context-card" data-testid="call-context-card">
+                                    <div class="card-topline">
+                                        <span class="card-label">Call context</span>
+                                        <span class="risk-badge risk-badge-danger" id="fraud-badge-status">
+                                            <span class="badge-dot"></span><span id="fraud-status-text">BLOCK</span>
+                                        </span>
+                                    </div>
+
+                                    <div class="caller-row">
+                                        <div class="caller-avatar">
+                                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                        </div>
+                                        <div>
+                                            <strong data-testid="caller-name" id="fraud-caller-name">Rahul Sharma</strong>
+                                            <span data-testid="caller-number" id="fraud-caller-phone">+91 98200 88123</span>
+                                        </div>
+                                        <div class="verified-mini" data-testid="caller-verification-state">
+                                            ⚠️ Review
+                                        </div>
+                                    </div>
+
+                                    <div class="context-details" data-testid="call-context-details">
+                                        <div>
+                                            <span>Channel</span>
+                                            <strong>Phone call</strong>
+                                        </div>
+                                        <div>
+                                            <span>Amount</span>
+                                            <strong class="amount-value" id="fraud-amount">₹2,50,00,000</strong>
+                                        </div>
+                                        <div>
+                                            <span>Purpose</span>
+                                            <strong id="fraud-intent">High-Value Transfer</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- Conic Gradient Risk Meter Ring -->
+                                    <div class="risk-meter-wrap" data-testid="risk-meter-section">
+                                        <div class="risk-meter" id="fraud-meter-ring" style="background: conic-gradient(#f56b6b 0 88%, #263445 88% 100%);">
+                                            <div class="risk-meter-inner">
+                                                <span class="risk-number" id="fraud-risk-score">88</span>
+                                                <span class="risk-denom">/ 100</span>
+                                                <span class="risk-caption">risk score</span>
+                                            </div>
+                                        </div>
+                                        <div class="risk-meter-note">
+                                            <span class="risk-note-title" id="fraud-note-title">High risk detected</span>
+                                            <span id="fraud-note-copy">Hold approval and verify the caller through a trusted channel.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="context-alert" data-testid="context-alert" id="fraud-alert-box">
+                                        <span id="fraud-alert-msg"><strong>Possible AI voice detected.</strong> Do not approve.</span>
+                                    </div>
+
+                                    <!-- Manual Action Buttons -->
+                                    <div class="context-actions" data-testid="call-actions">
+                                        <button class="btn btn-action-danger" onclick="handleAgentAction('BLOCK')">Hold approval (BLOCK)</button>
+                                        <button class="btn btn-action-warning" onclick="handleAgentAction('STEP_UP')">Request callback (STEP_UP)</button>
+                                        <button class="btn btn-action-ghost" onclick="handleAgentAction('ALLOW')">Approve anyway (ALLOW)</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Verification Breakdown & History -->
+                            <div class="desk-right-column">
+                                <div class="glass-card">
+                                    <div class="card-header">
+                                        <h2>ENGINE ANALYSIS BREAKDOWN</h2>
+                                        <span class="card-label" id="fraud-call-ref-badge">VK-4419</span>
+                                    </div>
+                                    <div class="breakdown-trio">
+                                        <div class="metric-tile danger">
+                                            <span class="tile-label">AI Fake Score</span>
+                                            <span class="tile-val" id="fraud-ai-score">91%</span>
+                                            <span class="tile-sub">Engine A (Wav2Vec2)</span>
+                                        </div>
+                                        <div class="metric-tile info">
+                                            <span class="tile-label">Speaker Match</span>
+                                            <span class="tile-val" id="fraud-match-score">84%</span>
+                                            <span class="tile-sub">Engine B (ECAPA)</span>
+                                        </div>
+                                        <div class="metric-tile success">
+                                            <span class="tile-label">Trust Index</span>
+                                            <span class="tile-val" id="fraud-trust-score">12%</span>
+                                            <span class="tile-sub">Fused Confidence</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="reasons-wrap">
+                                        <label>ACOUSTIC EXPLAINABILITY REASONS:</label>
+                                        <div class="chips-row" id="fraud-reasons-chips">
+                                            <span class="chip">synthetic_artifacts</span>
+                                            <span class="chip">enrolled_speaker_match_high</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-card margin-top">
+                                    <div class="card-header">
+                                        <h2>RECENT FRAUD DESK INCIDENTS</h2>
+                                        <button class="btn-secondary btn-sm" onclick="loadFraudDeskQueue()">Refresh Queue</button>
+                                    </div>
+                                    <div class="table-container">
+                                        <table class="soc-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ref</th>
+                                                    <th>Caller</th>
+                                                    <th>Intent</th>
+                                                    <th>AI Fake %</th>
+                                                    <th>Match %</th>
+                                                    <th>Risk</th>
+                                                    <th>Decision</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="fraud-table-body">
+                                                <tr><td colspan="7" class="text-center">Loading incidents...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
 
-                <div class="quick-actions-grid margin-top">
-                    <div class="action-card" onclick="switchTab('tab-analyze')">
-                        <div class="icon-box">🎙</div>
-                        <h3>Analyze Voice Sample</h3>
-                        <p>Upload WAV/MP3 audio to inspect for AI synthetic artifacts and speaker match.</p>
-                        <span class="action-link">Open Analyzer →</span>
+                <!-- VIEW 2: LIVE CALL (STREAMING & JURY DEMO) -->
+                <div id="tab-live" class="tab-panel">
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span>Real-time audio monitoring</div>
+                            <h1>Live call workspace</h1>
+                            <p>Live stream evaluation with jury 1-click test triggers.</p>
+                        </div>
                     </div>
-                    <div class="action-card" onclick="switchTab('tab-live')">
-                        <div class="icon-box">📡</div>
-                        <h3>Live Stream Call Workspace</h3>
-                        <p>Run real-time call verification with jury test controls (Real / Clone / Impostor).</p>
-                        <span class="action-link">Open Workspace →</span>
+
+                    <div class="jury-demo-bar">
+                        <div class="demo-title">
+                            <span class="chip-badge">SIH26104 JURY DEMO PANEL</span>
+                            <span>Click to trigger real audio WAV evaluation via /v1/detect:</span>
+                        </div>
+                        <div class="demo-buttons">
+                            <button class="btn-demo allow" id="btn-demo-real">✓ Play Real Voice → ALLOW</button>
+                            <button class="btn-demo block" id="btn-demo-clone">⚠ Play AI Clone of CFO → BLOCK</button>
+                            <button class="btn-demo stepup" id="btn-demo-impostor">? Play Impostor Voice → STEP_UP</button>
+                        </div>
                     </div>
-                    <div class="action-card" onclick="switchTab('tab-trusted')">
-                        <div class="icon-box">🔒</div>
-                        <h3>Enroll Trusted Person</h3>
-                        <p>Register executive voiceprint embedding with cryptographic SHA-256 audit log.</p>
-                        <span class="action-link">Enroll Voice →</span>
+
+                    <div class="desk-grid margin-top">
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h2>LIVE STREAM SIGNAL</h2>
+                                <span class="live-indicator"><span class="pulse-dot"></span> STREAM ACTIVE</span>
+                            </div>
+                            <canvas id="waveform-canvas" width="500" height="90"></canvas>
+                        </div>
+
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h2>REALTIME SPECTRUM DIAGNOSTIC</h2>
+                                <span class="risk-badge risk-badge-danger" id="live-status-pill">BLOCK</span>
+                            </div>
+                            <div class="risk-meter-wrap">
+                                <div class="risk-meter" id="live-meter-ring" style="background: conic-gradient(#f56b6b 0 88%, #263445 88% 100%);">
+                                    <div class="risk-meter-inner">
+                                        <span class="risk-number" id="live-risk-score">88</span>
+                                        <span class="risk-denom">/ 100</span>
+                                        <span class="risk-caption">live risk</span>
+                                    </div>
+                                </div>
+                                <div class="risk-meter-note">
+                                    <strong id="live-meaning-text">Sounds like Rahul Sharma, but voice is AI-generated</strong>
+                                    <p id="live-action-text">Do not approve funds. Call back on official number.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="panel-card margin-top">
-                    <div class="card-header">
-                        <h2>RECENT INCIDENT ACTIVITY FEED</h2>
-                        <button class="btn-secondary" onclick="loadOverviewData()">Refresh Feed</button>
-                    </div>
-                    <div class="table-container">
-                        <table class="soc-table">
-                            <thead>
-                                <tr>
-                                    <th>Call Ref</th>
-                                    <th>Time</th>
-                                    <th>Claimed Identity</th>
-                                    <th>Intent / Amount</th>
-                                    <th>AI Fake %</th>
-                                    <th>Match %</th>
-                                    <th>Risk Score</th>
-                                    <th>Decision</th>
-                                </tr>
-                            </thead>
-                            <tbody id="overview-feed-body">
-                                <tr><td colspan="8" class="text-center">Loading incident feed...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 2: ANALYZE VOICE -->
-            <section id="tab-analyze" class="tab-panel">
-                <div class="panel-card">
-                    <div class="card-header">
-                        <h2>VOICE INTEGRITY & DEEPFAKE ANALYZER</h2>
-                        <span class="sub-header">Evaluates Engine A (Wav2Vec2) & Engine B (ECAPA-TDNN)</span>
+                <!-- VIEW 3: ANALYZE VOICE -->
+                <div id="tab-analyze" class="tab-panel">
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span>Deepfake & Voiceprint Inspection</div>
+                            <h1>Analyze voice sample</h1>
+                            <p>Upload a 16kHz WAV/MP3 recording for Engine A + Engine B scoring.</p>
+                        </div>
                     </div>
 
-                    <form id="analyze-form" onsubmit="submitVoiceAnalysis(event)">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Target Claimed Identity</label>
-                                <select id="analyze-person-select">
-                                    <option value="UB-CFO-0192">Rahul Sharma (Chief Financial Officer · UB-CFO-0192)</option>
-                                    <option value="UB-BR-0441">Meera Iyer (Regional Branch Director · UB-BR-0441)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Transaction Intent</label>
-                                <input type="text" id="analyze-intent" value="High-Value Fund Transfer (₹2.5 Crore)" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Transaction Amount (INR)</label>
-                                <input type="number" id="analyze-amount" value="25000000" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Caller Phone Number</label>
-                                <input type="text" id="analyze-phone" value="+91 98200 88123" required>
-                            </div>
-                        </div>
-
-                        <div class="audio-upload-box">
-                            <h3>Upload Voice Audio File for Inspection</h3>
-                            <p>Drag & drop 16kHz WAV/MP3 sample or select demo sample:</p>
-                            <div class="upload-controls">
-                                <input type="file" id="analyze-file-input" accept="audio/*">
-                                <button type="button" class="btn-secondary" id="btn-use-cfo-clone">
-                                    Load CFO AI Clone Sample
-                                </button>
-                                <button type="button" class="btn-secondary" id="btn-use-cfo-real">
-                                    Load CFO Real Sample
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-footer">
-                            <button type="submit" class="btn-primary">
-                                Run Voice Integrity Inspection →
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- TAB 3: VOICE ANALYSIS RESULT -->
-            <section id="tab-result" class="tab-panel">
-                <!-- Alert Banner -->
-                <div id="result-banner" class="alert-banner hidden">
-                    <div class="banner-icon" id="res-banner-icon">⚠</div>
-                    <div class="banner-content">
-                        <h3 id="res-banner-title">Voice Clone Suspected!</h3>
-                        <p id="res-banner-msg">High risk detected. Do not execute money transfers on voice alone.</p>
-                    </div>
-                    <div class="banner-action" id="res-banner-action-text">Official Callback Required</div>
-                </div>
-
-                <div class="workspace-grid">
-                    <!-- Left Profile Card -->
-                    <div class="panel-card caller-card">
-                        <div class="card-header">
-                            <h2>INSPECTED CALL SESSION</h2>
-                            <span class="call-id-badge" id="res-display-call-ref">VK-4419</span>
-                        </div>
-                        <div class="caller-profile">
-                            <div class="avatar">
-                                <span id="res-caller-initials">RS</span>
-                            </div>
-                            <div class="profile-details">
-                                <h3 id="res-display-person-name">Rahul Sharma</h3>
-                                <p id="res-display-person-title">Chief Financial Officer (CFO)</p>
-                                <div class="meta-row">
-                                    <span class="label">Caller No:</span>
-                                    <span class="value" id="res-display-caller-num">+91 98200 88123</span>
+                    <div class="glass-card margin-top">
+                        <form id="analyze-form" onsubmit="submitVoiceAnalysis(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Claimed Identity</label>
+                                    <select id="analyze-person-code">
+                                        <option value="UB-CFO-0192">Rahul Sharma (Chief Financial Officer · UB-CFO-0192)</option>
+                                        <option value="UB-BR-0441">Meera Iyer (Branch Manager · UB-BR-0441)</option>
+                                    </select>
                                 </div>
-                                <div class="meta-row">
-                                    <span class="label">Official Callback:</span>
-                                    <span class="value teal" id="res-display-callback">+91 22 2262 1100</span>
+                                <div class="form-group">
+                                    <label>Transaction Intent</label>
+                                    <input type="text" id="analyze-intent-input" value="High-Value Fund Transfer (₹2.5 Crore)">
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="transaction-box">
-                            <div class="tx-row">
-                                <span>Requested Intent:</span>
-                                <strong id="res-display-intent">Fund Transfer (₹2.5 Crore)</strong>
-                            </div>
-                            <div class="tx-row">
-                                <span>Amount:</span>
-                                <strong class="warning-text" id="res-display-amount">₹2,50,00,000</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Analysis Card -->
-                    <div class="panel-card analysis-card">
-                        <div class="card-header">
-                            <h2>INTEGRITY & RISK DIAGNOSTIC</h2>
-                            <span class="status-pill" id="res-display-decision-pill">EVALUATED</span>
-                        </div>
-
-                        <div class="gauge-container">
-                            <div class="circular-meter">
-                                <svg viewBox="0 0 100 100" class="meter-svg">
-                                    <circle class="meter-bg" cx="50" cy="50" r="42"></circle>
-                                    <circle class="meter-bar" id="res-meter-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"></circle>
-                                </svg>
-                                <div class="meter-text">
-                                    <span class="score-num" id="res-display-risk-score">0</span>
-                                    <span class="score-label">RISK SCORE</span>
+                                <div class="form-group">
+                                    <label>Transaction Amount (INR)</label>
+                                    <input type="number" id="analyze-amount-input" value="25000000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Caller Telephone</label>
+                                    <input type="text" id="analyze-phone-input" value="+91 98200 88123">
                                 </div>
                             </div>
 
-                            <div class="score-trio">
-                                <div class="score-box">
-                                    <span class="box-label">AI Fake Score</span>
-                                    <span class="box-val danger" id="res-display-ai-score">0%</span>
-                                    <span class="sub-text">Engine A (Wav2Vec2)</span>
-                                </div>
-                                <div class="score-box">
-                                    <span class="box-label">Speaker Match</span>
-                                    <span class="box-val info" id="res-display-match-score">0%</span>
-                                    <span class="sub-text">Engine B (ECAPA)</span>
-                                </div>
-                                <div class="score-box">
-                                    <span class="box-label">Trust Index</span>
-                                    <span class="box-val success" id="res-display-trust-score">100%</span>
-                                    <span class="sub-text">Fused Confidence</span>
+                            <div class="upload-dropzone margin-top">
+                                <h3>Upload Voice Audio File</h3>
+                                <p>Select a 16kHz WAV or MP3 audio recording file:</p>
+                                <div class="upload-controls">
+                                    <input type="file" id="analyze-file-input" accept="audio/*">
+                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-clone">Load CFO AI Clone Sample</button>
+                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-real">Load CFO Real Sample</button>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="meaning-box">
-                            <label>DECISION DIAGNOSTIC:</label>
-                            <p id="res-display-meaning">Evaluation complete.</p>
-                        </div>
-
-                        <div class="reasons-section">
-                            <label>ACOUSTIC EXPLAINABILITY REASONS:</label>
-                            <div class="reasons-chips" id="res-display-reasons-list">
-                                <span class="chip">synthetic_artifacts</span>
+                            <div class="form-footer margin-top">
+                                <button type="submit" class="btn btn-action-danger">Run SatyaVani Integrity Inspection →</button>
                             </div>
-                        </div>
-
-                        <div class="action-guidance-box">
-                            <label>RECOMMENDED AGENT ACTION:</label>
-                            <div class="guidance-text" id="res-display-action-text">Perform verification.</div>
-                        </div>
-
-                        <div class="decision-actions">
-                            <button class="btn-action allow" onclick="handleAgentAction('ALLOW')">
-                                ✓ Continue Call (ALLOW)
-                            </button>
-                            <button class="btn-action stepup" onclick="handleAgentAction('STEP_UP')">
-                                ? Step-Up Verify (STEP_UP)
-                            </button>
-                            <button class="btn-action block" onclick="handleAgentAction('BLOCK')">
-                                ✕ Block & Escalate (BLOCK)
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 4: LIVE DETECTION (JURY PANEL) -->
-            <section id="tab-live" class="tab-panel">
-                <div class="jury-demo-bar">
-                    <div class="demo-title">
-                        <span class="chip-badge">SIH26104 JURY DEMO PANEL</span>
-                        <span>Send raw WAV audio sample bytes to /v1/detect:</span>
-                    </div>
-                    <div class="demo-buttons">
-                        <button class="btn-demo allow" id="btn-demo-real">
-                            <span class="icon">✓</span> Play Real Voice (Rahul Sharma) → ALLOW
-                        </button>
-                        <button class="btn-demo block" id="btn-demo-clone">
-                            <span class="icon">⚠</span> Play AI Clone of CFO → BLOCK
-                        </button>
-                        <button class="btn-demo stepup" id="btn-demo-impostor">
-                            <span class="icon">?</span> Play Impostor Voice → STEP_UP
-                        </button>
+                        </form>
                     </div>
                 </div>
 
-                <div id="live-banner" class="alert-banner hidden">
-                    <div class="banner-icon" id="banner-icon">⚠</div>
-                    <div class="banner-content">
-                        <h3 id="banner-title">Voice Clone Suspected!</h3>
-                        <p id="banner-msg">High risk detected. Do not execute money transfers on voice alone.</p>
-                    </div>
-                    <div class="banner-action" id="banner-action-text">Official Callback Required</div>
-                </div>
-
-                <div class="workspace-grid">
-                    <div class="panel-card caller-card">
-                        <div class="card-header">
-                            <h2>ACTIVE LIVE STREAM SESSION</h2>
-                            <span class="call-id-badge" id="live-display-call-ref">VK-4419</span>
-                        </div>
-                        <div class="caller-profile">
-                            <div class="avatar">
-                                <span id="live-caller-initials">RS</span>
-                            </div>
-                            <div class="profile-details">
-                                <h3 id="live-display-person-name">Rahul Sharma</h3>
-                                <p id="live-display-person-title">Chief Financial Officer (CFO)</p>
-                                <div class="meta-row">
-                                    <span class="label">Caller No:</span>
-                                    <span class="value" id="live-display-caller-num">+91 98200 88123</span>
-                                </div>
-                                <div class="meta-row">
-                                    <span class="label">Official Callback:</span>
-                                    <span class="value teal" id="live-display-callback">+91 22 2262 1100</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="audio-stream-container">
-                            <div class="stream-header">
-                                <span>LIVE AUDIO STREAM (16kHz PCM)</span>
-                                <span class="live-indicator"><span class="dot"></span> LIVE</span>
-                            </div>
-                            <canvas id="waveform-canvas" width="400" height="70"></canvas>
+                <!-- VIEW 4: ENROLL VOICE (TRUSTED VOICES) -->
+                <div id="tab-trusted" class="tab-panel">
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span>Trusted Speaker Enrollment</div>
+                            <h1>Enroll executive voice</h1>
+                            <p>Extract 192-dim speaker voiceprint embedding with zero raw audio disk storage.</p>
                         </div>
                     </div>
 
-                    <div class="panel-card analysis-card">
-                        <div class="card-header">
-                            <h2>REAL-TIME SPECTRUM GAUGE</h2>
-                            <span class="status-pill" id="live-display-decision-pill">EVALUATING</span>
-                        </div>
-
-                        <div class="gauge-container">
-                            <div class="circular-meter">
-                                <svg viewBox="0 0 100 100" class="meter-svg">
-                                    <circle class="meter-bg" cx="50" cy="50" r="42"></circle>
-                                    <circle class="meter-bar" id="live-meter-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"></circle>
-                                </svg>
-                                <div class="meter-text">
-                                    <span class="score-num" id="live-display-risk-score">0</span>
-                                    <span class="score-label">RISK SCORE</span>
+                    <div class="glass-card margin-top">
+                        <form id="enroll-form" onsubmit="submitEnrollment(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Person Code (Unique ID)</label>
+                                    <input type="text" id="enroll-code" value="UB-CFO-0192" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="enroll-name" value="Rahul Sharma" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Official Role Title</label>
+                                    <input type="text" id="enroll-role" value="Chief Financial Officer" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Registered Official Callback Number</label>
+                                    <input type="text" id="enroll-callback" value="+91 22 2262 1100" required>
                                 </div>
                             </div>
 
-                            <div class="score-trio">
-                                <div class="score-box">
-                                    <span class="box-label">AI Fake Score</span>
-                                    <span class="box-val danger" id="live-display-ai-score">0%</span>
-                                    <span class="sub-text">Engine A (Wav2Vec2)</span>
-                                </div>
-                                <div class="score-box">
-                                    <span class="box-label">Speaker Match</span>
-                                    <span class="box-val info" id="live-display-match-score">0%</span>
-                                    <span class="sub-text">Engine B (ECAPA)</span>
-                                </div>
-                                <div class="score-box">
-                                    <span class="box-label">Trust Index</span>
-                                    <span class="box-val success" id="live-display-trust-score">100%</span>
-                                    <span class="sub-text">Fused Confidence</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="meaning-box">
-                            <label>DECISION DIAGNOSTIC:</label>
-                            <p id="live-display-meaning">Select jury button to run evaluation...</p>
-                        </div>
-
-                        <div class="reasons-section">
-                            <label>ACOUSTIC EXPLAINABILITY REASONS:</label>
-                            <div class="reasons-chips" id="live-display-reasons-list">
-                                <span class="chip">awaiting_eval</span>
-                            </div>
-                        </div>
-
-                        <div class="action-guidance-box">
-                            <label>RECOMMENDED AGENT ACTION:</label>
-                            <div class="guidance-text" id="live-display-action-text">Perform evaluation.</div>
-                        </div>
-
-                        <div class="decision-actions">
-                            <button class="btn-action allow" onclick="handleAgentAction('ALLOW')">
-                                ✓ Continue Call (ALLOW)
-                            </button>
-                            <button class="btn-action stepup" onclick="handleAgentAction('STEP_UP')">
-                                ? Step-Up Verify (STEP_UP)
-                            </button>
-                            <button class="btn-action block" onclick="handleAgentAction('BLOCK')">
-                                ✕ Block & Escalate (BLOCK)
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 5: TRUSTED VOICES -->
-            <section id="tab-trusted" class="tab-panel">
-                <div class="panel-card">
-                    <div class="card-header">
-                        <h2>TRUSTED PERSON VOICEPRINT ENROLLMENT</h2>
-                        <span class="sub-header">Zero Raw Audio Storage · 192-dim Embedding Hash Only</span>
-                    </div>
-
-                    <form id="enroll-form" onsubmit="submitEnrollment(event)">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Person Code (Unique ID)</label>
-                                <input type="text" id="enroll-code" placeholder="e.g. UB-CFO-0192" required value="UB-CFO-0192">
-                            </div>
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" id="enroll-name" placeholder="e.g. Rahul Sharma" required value="Rahul Sharma">
-                            </div>
-                            <div class="form-group">
-                                <label>Official Role Title</label>
-                                <input type="text" id="enroll-role" placeholder="e.g. Chief Financial Officer" required value="Chief Financial Officer">
-                            </div>
-                            <div class="form-group">
-                                <label>Registered Official Callback Number</label>
-                                <input type="text" id="enroll-callback" placeholder="e.g. +91 22 2262 1100" required value="+91 22 2262 1100">
-                            </div>
-                        </div>
-
-                        <div class="audio-upload-box">
-                            <h3>Enrollment Audio Sample (10-15 seconds)</h3>
-                            <p>Upload a clean voice WAV sample or record live speech sample:</p>
-                            <div class="upload-controls">
+                            <div class="upload-dropzone margin-top">
+                                <h3>Enrollment Audio Sample</h3>
+                                <p>Upload clean 10-15s speech sample:</p>
                                 <input type="file" id="enroll-file-input" accept="audio/*">
-                                <button type="button" class="btn-secondary" id="btn-record-voice">
-                                    🎙 Record Live (WebAudio)
-                                </button>
                             </div>
-                        </div>
 
-                        <div class="form-footer">
-                            <button type="submit" class="btn-primary">
-                                Extract Voiceprint & Save Audit Hash
-                            </button>
-                        </div>
-                    </form>
-
-                    <div id="enroll-result" class="enroll-result-card hidden margin-top">
-                        <div class="success-header">
-                            <span class="icon">✓</span>
-                            <h3>VOICEPRINT ENROLLED SUCCESSFULLY</h3>
-                        </div>
-                        <div class="result-details">
-                            <p><strong>Person ID:</strong> <span id="res-person-id">1</span></p>
-                            <p><strong>Quality Score:</strong> <span id="res-quality">99.2%</span></p>
-                            <p><strong>Duration:</strong> <span id="res-duration">3.5s</span></p>
-                            <p><strong>Immutable SHA-256 Audit Hash:</strong></p>
-                            <code class="hash-block" id="res-hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code>
-                            <div class="privacy-note">
-                                🔒 Raw audio buffer processed in memory and purged immediately.
+                            <div class="form-footer margin-top">
+                                <button type="submit" class="btn btn-action-danger">Extract Voiceprint & Generate Cryptographic Audit Hash</button>
                             </div>
+                        </form>
+
+                        <div id="enroll-result-box" class="enroll-result-card hidden margin-top">
+                            <h3>✓ VOICEPRINT ENROLLED SUCCESSFULLY</h3>
+                            <p>Person ID: <strong id="res-person-id">1</strong> | Quality: <strong id="res-quality">99.2%</strong> | Duration: <strong id="res-duration">3.5s</strong></p>
+                            <code>SHA-256 Hash: <span id="res-hash">d30ed0bfa...</span></code>
                         </div>
                     </div>
-                </div>
 
-                <div class="panel-card margin-top">
-                    <div class="card-header">
-                        <h2>ENROLLED INDIVIDUALS REGISTRY</h2>
-                        <button class="btn-secondary" onclick="loadTrustedPeople()">Refresh Registry</button>
-                    </div>
-                    <div class="table-container">
+                    <div class="glass-card margin-top">
+                        <div class="card-header">
+                            <h2>ENROLLED INDIVIDUALS REGISTRY</h2>
+                            <button class="btn-secondary btn-sm" onclick="loadTrustedPeople()">Refresh</button>
+                        </div>
                         <table class="soc-table">
                             <thead>
                                 <tr>
@@ -530,68 +416,22 @@
                         </table>
                     </div>
                 </div>
-            </section>
 
-            <!-- TAB 6: FRAUD DESK (SOC QUEUE) -->
-            <section id="tab-fraud" class="tab-panel">
-                <div class="panel-card">
-                    <div class="card-header">
-                        <h2>SECURITY INCIDENT & FRAUD DESK QUEUE</h2>
-                        <button class="btn-secondary" onclick="loadFraudDeskQueue()">Refresh Queue</button>
-                    </div>
-
-                    <div class="table-container">
-                        <table class="soc-table">
-                            <thead>
-                                <tr>
-                                    <th>Call Ref</th>
-                                    <th>Time</th>
-                                    <th>Claimed Identity</th>
-                                    <th>Intent / Amount</th>
-                                    <th>AI Fake %</th>
-                                    <th>Match %</th>
-                                    <th>Risk Score</th>
-                                    <th>Decision</th>
-                                    <th>Override Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fraud-queue-body">
-                                <tr><td colspan="9" class="text-center">Loading fraud desk queue...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 7: AUDIT TRAIL -->
-            <section id="tab-audit" class="tab-panel">
-                <div class="panel-card">
-                    <div class="card-header">
-                        <h2>SECURITY POLICY THRESHOLDS</h2>
-                        <span class="sub-header">SIH26104 Risk Engine Configuration</span>
-                    </div>
-                    <div class="policy-controls">
-                        <div class="policy-item">
-                            <label>Step-Up Verification Threshold: <strong>40 – 69 Risk</strong></label>
-                            <input type="range" min="20" max="60" value="40" disabled>
-                        </div>
-                        <div class="policy-item">
-                            <label>Block & Escalate Threshold: <strong>≥ 70 Risk</strong></label>
-                            <input type="range" min="60" max="90" value="70" disabled>
-                        </div>
-                        <div class="policy-item">
-                            <label>High-Value Transfer Trigger: <strong>≥ ₹5,00,000</strong></label>
-                            <input type="range" min="100000" max="10000000" value="500000" disabled>
+                <!-- VIEW 5: AUDIT LOG -->
+                <div id="tab-audit" class="tab-panel">
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span>Cryptographic ledger</div>
+                            <h1>Audit log</h1>
+                            <p>Immutable SHA-256 signed event payload records stored in SQLite.</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="panel-card margin-top">
-                    <div class="card-header">
-                        <h2>CRYPTOGRAPHIC AUDIT LOG TRAIL</h2>
-                        <span class="sub-header">Immutable SHA-256 Signed Event Records</span>
-                    </div>
-                    <div class="table-container">
+                    <div class="glass-card margin-top">
+                        <div class="card-header">
+                            <h2>IMMUTABLE AUDIT LOG TRAIL</h2>
+                            <button class="btn-secondary btn-sm" onclick="loadAuditTrail()">Refresh Trail</button>
+                        </div>
                         <table class="soc-table">
                             <thead>
                                 <tr>
@@ -609,24 +449,22 @@
                         </table>
                     </div>
                 </div>
-            </section>
-        </main>
 
-        <!-- UI Footer reporting engine models and MOCK status -->
-        <footer class="soc-footer">
-            <div class="health-status">
-                <span class="health-dot" id="footer-health-dot"></span>
-                <span>ENGINE A: </span>
-                <strong class="teal">garystafford/wav2vec2-deepfake-voice-detector</strong>
-                <span class="divider">|</span>
-                <span>ENGINE B: </span>
-                <strong class="teal">speechbrain/spkrec-ecapa-voxceleb</strong>
-                <span class="divider">|</span>
-                <span>MOCK MODE: </span>
-                <strong id="footer-mock-status" class="mock-badge false">FALSE</strong>
-            </div>
-        </footer>
+            </main>
+        </section>
     </div>
+
+    <!-- UI Footer reporting engine models and MOCK status -->
+    <footer class="satya-footer">
+        <div class="footer-status-row">
+            <span class="pulse-dot"></span>
+            <span>Engine A: <strong class="teal">garystafford/wav2vec2-deepfake-voice-detector</strong></span>
+            <span class="divider">|</span>
+            <span>Engine B: <strong class="teal">speechbrain/spkrec-ecapa-voxceleb</strong></span>
+            <span class="divider">|</span>
+            <span>Mock Mode: <strong id="footer-mock-status" class="mock-badge false">FALSE</strong></span>
+        </div>
+    </footer>
 
     <script src="/static/app.js"></script>
 </body>

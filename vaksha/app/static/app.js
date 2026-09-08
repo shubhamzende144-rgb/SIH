@@ -1,4 +1,4 @@
-// Vaksha VoiceShield Application Core Logic
+// SatyaVani / Vaksha Voice Integrity Application Logic
 
 let currentCallRef = "VK-4419";
 let activePersonaEmail = "priya.nair@unionbank.in";
@@ -11,18 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initJuryDemo();
     initAnalyzeFormHelpers();
     checkHealthStatus();
-    loadOverviewData();
-    loadTrustedPeople();
     loadFraudDeskQueue();
+    loadTrustedPeople();
     loadAuditTrail();
-
-    // Persona switcher
-    const personaSelect = document.getElementById("persona-select");
-    if (personaSelect) {
-        personaSelect.addEventListener("change", (e) => {
-            activePersonaEmail = e.target.value;
-        });
-    }
 });
 
 // Check System Health & Update Footer Status
@@ -32,7 +23,7 @@ async function checkHealthStatus() {
         if (res.ok) {
             const data = await res.json();
             const mockStatusEl = document.getElementById("footer-mock-status");
-            if (data.engines) {
+            if (mockStatusEl && data.engines) {
                 const isMock = data.engines.mock;
                 mockStatusEl.innerText = isMock ? "TRUE" : "FALSE";
                 mockStatusEl.className = `mock-badge ${isMock ? 'true' : 'false'}`;
@@ -43,42 +34,56 @@ async function checkHealthStatus() {
     }
 }
 
-// Tab Switcher
+// Tab Switcher Logic
 function switchTab(tabId) {
-    const tabs = document.querySelectorAll(".tab-btn");
+    const navItems = document.querySelectorAll(".sidebar-nav-item");
     const panels = document.querySelectorAll(".tab-panel");
 
-    tabs.forEach(t => t.classList.remove("active"));
-    panels.forEach(p => p.classList.remove("active"));
+    navItems.forEach(item => {
+        if (item.getAttribute("data-tab") === tabId) {
+            item.classList.add("is-active", "active");
+        } else {
+            item.classList.remove("is-active", "active");
+        }
+    });
 
-    const targetTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-    if (targetTab) {
-        targetTab.classList.remove("hidden");
-        targetTab.classList.add("active");
+    panels.forEach(panel => {
+        if (panel.id === tabId) {
+            panel.classList.add("active");
+        } else {
+            panel.classList.remove("active");
+        }
+    });
+
+    // Update topbar title
+    const topbarTitle = document.getElementById("topbar-page-title");
+    if (topbarTitle) {
+        const titleMap = {
+            "tab-fraud": "Fraud desk",
+            "tab-live": "Live call",
+            "tab-analyze": "Analyze voice",
+            "tab-trusted": "Enroll voice",
+            "tab-audit": "Audit log"
+        };
+        if (titleMap[tabId]) topbarTitle.innerText = titleMap[tabId];
     }
 
-    const targetPanel = document.getElementById(tabId);
-    if (targetPanel) {
-        targetPanel.classList.add("active");
-    }
-
-    if (tabId === "tab-overview") loadOverviewData();
-    if (tabId === "tab-trusted") loadTrustedPeople();
     if (tabId === "tab-fraud") loadFraudDeskQueue();
+    if (tabId === "tab-trusted") loadTrustedPeople();
     if (tabId === "tab-audit") loadAuditTrail();
 }
 
 function initTabs() {
-    const tabs = document.querySelectorAll(".tab-btn");
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-            const targetId = tab.getAttribute("data-tab");
-            switchTab(targetId);
+    const navItems = document.querySelectorAll(".sidebar-nav-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const tabId = item.getAttribute("data-tab");
+            if (tabId) switchTab(tabId);
         });
     });
 }
 
-// Waveform Animation
+// Waveform Canvas Visualizer Animation
 function initWaveform() {
     const canvas = document.getElementById("waveform-canvas");
     if (!canvas) return;
@@ -88,7 +93,7 @@ function initWaveform() {
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "#06b6d4";
+        ctx.strokeStyle = "#81ff89";
         ctx.beginPath();
 
         const width = canvas.width;
@@ -98,7 +103,7 @@ function initWaveform() {
 
         for (let i = 0; i < 100; i++) {
             const v = Math.sin((i + step) * 0.15) * Math.cos((i * 0.1) + step * 0.2);
-            const y = (v * (height / 3)) + (height / 2);
+            const y = (v * (height / 3.5)) + (height / 2);
 
             if (i === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
@@ -107,13 +112,13 @@ function initWaveform() {
         }
 
         ctx.stroke();
-        step += 0.4;
+        step += 0.3;
         waveformAnimId = requestAnimationFrame(draw);
     }
     draw();
 }
 
-// Analyze Voice Helpers
+// Analyze Voice Form Helpers
 function initAnalyzeFormHelpers() {
     const btnClone = document.getElementById("btn-use-cfo-clone");
     const btnReal = document.getElementById("btn-use-cfo-real");
@@ -135,25 +140,25 @@ function initAnalyzeFormHelpers() {
     }
 }
 
-// Submit Voice Analysis Form -> POST /v1/detect
+// Submit Voice Analysis -> POST /v1/detect
 async function submitVoiceAnalysis(e) {
     e.preventDefault();
-    const personCode = document.getElementById("analyze-person-select").value;
-    const intent = document.getElementById("analyze-intent").value;
-    const amount = document.getElementById("analyze-amount").value;
-    const phone = document.getElementById("analyze-phone").value;
+    const personCode = document.getElementById("analyze-person-code").value;
+    const intent = document.getElementById("analyze-intent-input").value;
+    const amount = document.getElementById("analyze-amount-input").value;
+    const phone = document.getElementById("analyze-phone-input").value;
     const fileInput = document.getElementById("analyze-file-input");
 
     let audioBlob = selectedAnalyzeBlob;
     let fileName = "sample.wav";
 
-    if (fileInput.files[0]) {
+    if (fileInput && fileInput.files[0]) {
         audioBlob = fileInput.files[0];
         fileName = fileInput.files[0].name;
     }
 
     if (!audioBlob) {
-        // Default to cfo_clone.wav if no file selected
+        // Default to cfo_clone.wav
         const res = await fetch("/data/samples/cfo_clone.wav");
         audioBlob = await res.blob();
         fileName = "cfo_clone.wav";
@@ -175,90 +180,104 @@ async function submitVoiceAnalysis(e) {
         if (!response.ok) throw new Error(`POST /v1/detect error ${response.status}`);
         const data = await response.json();
 
-        // Update Result View & Switch Tab
-        updateResultUI(data);
-        switchTab("tab-result");
+        // Update Fraud Desk Context Card & Switch to Fraud Desk View
+        updateFraudDeskContextUI(data);
+        switchTab("tab-fraud");
     } catch (err) {
         alert(`Voice Inspection Error: ${err.message}`);
     }
 }
 
-// Update Result View UI
-function updateResultUI(data) {
+// Update Fraud Desk Context Card & Engine Breakdown
+function updateFraudDeskContextUI(data) {
     currentCallRef = data.call_ref;
-    document.getElementById("res-display-call-ref").innerText = data.call_ref;
-    document.getElementById("res-display-person-name").innerText = data.person_claimed || "Rahul Sharma";
-    if (data.official_callback) {
-        document.getElementById("res-display-callback").innerText = data.official_callback;
+    
+    // Header & Ref
+    const refBadge = document.getElementById("fraud-call-ref-badge");
+    if (refBadge) refBadge.innerText = data.call_ref;
+
+    // Person & Caller
+    const callerName = document.getElementById("fraud-caller-name");
+    const callerPhone = document.getElementById("fraud-caller-phone");
+    if (callerName) callerName.innerText = data.person_claimed || "Rahul Sharma";
+    if (callerPhone) callerPhone.innerText = data.caller_number || "+91 98200 88123";
+
+    // Intent & Amount
+    const intentEl = document.getElementById("fraud-intent");
+    const amountEl = document.getElementById("fraud-amount");
+    if (intentEl) intentEl.innerText = data.intent || "High-Value Transfer";
+    if (amountEl && data.amount_inr) {
+        amountEl.innerText = `₹${Number(data.amount_inr).toLocaleString('en-IN')}`;
     }
 
-    const risk = data.risk;
-    document.getElementById("res-display-risk-score").innerText = Math.round(risk);
-    document.getElementById("res-display-ai-score").innerText = Math.round(data.breakdown.ai_fake_score) + "%";
-    document.getElementById("res-display-match-score").innerText = Math.round(data.breakdown.speaker_match) + "%";
-    document.getElementById("res-display-trust-score").innerText = Math.round(data.trust) + "%";
+    // Risk Meter & Decision Badge
+    const risk = Math.round(data.risk);
+    const riskScoreEl = document.getElementById("fraud-risk-score");
+    if (riskScoreEl) riskScoreEl.innerText = risk;
 
-    const offset = 264 - (264 * (risk / 100));
-    const circle = document.getElementById("res-meter-circle");
-    circle.style.strokeDashoffset = offset;
+    const statusBadge = document.getElementById("fraud-badge-status");
+    const statusText = document.getElementById("fraud-status-text");
+    if (statusText) statusText.innerText = data.final_decision;
 
-    const decisionPill = document.getElementById("res-display-decision-pill");
-    const banner = document.getElementById("result-banner");
-    const bannerTitle = document.getElementById("res-banner-title");
-    const bannerMsg = document.getElementById("res-banner-msg");
-    const bannerIcon = document.getElementById("res-banner-icon");
-    const bannerAction = document.getElementById("res-banner-action-text");
+    const meterRing = document.getElementById("fraud-meter-ring");
+    let color = "#f56b6b"; // Danger / Block red
+    if (data.final_decision === "ALLOW") color = "#10b981"; // Green
+    if (data.final_decision === "STEP_UP") color = "#f59e0b"; // Warning amber
 
-    banner.className = "alert-banner";
-    if (data.final_decision === "BLOCK") {
-        circle.style.stroke = "#ef4444";
-        decisionPill.innerText = "BLOCK";
-        decisionPill.style.background = "rgba(239, 68, 68, 0.2)";
-        decisionPill.style.color = "#f87171";
-
-        banner.classList.add("banner-block");
-        bannerIcon.innerText = "🚨";
-        bannerTitle.innerText = "CRITICAL RISK: VOICE CLONE SUSPECTED!";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "DO NOT APPROVE FUNDS";
-    } else if (data.final_decision === "STEP_UP") {
-        circle.style.stroke = "#f59e0b";
-        decisionPill.innerText = "STEP_UP";
-        decisionPill.style.background = "rgba(245, 158, 11, 0.2)";
-        decisionPill.style.color = "#fbbf24";
-
-        banner.classList.add("banner-stepup");
-        bannerIcon.innerText = "⚠";
-        bannerTitle.innerText = "STEP-UP VERIFICATION REQUIRED";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "CALLBACK ENROLLED NUMBER";
-    } else {
-        circle.style.stroke = "#10b981";
-        decisionPill.innerText = "ALLOW";
-        decisionPill.style.background = "rgba(16, 185, 129, 0.2)";
-        decisionPill.style.color = "#34d399";
-
-        banner.classList.add("banner-allow");
-        bannerIcon.innerText = "✓";
-        bannerTitle.innerText = "VOICE INTEGRITY VERIFIED";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "SAFE TO PROCEED";
+    if (meterRing) {
+        meterRing.style.background = `conic-gradient(${color} 0 ${risk}%, #263445 ${risk}% 100%)`;
     }
 
-    document.getElementById("res-display-meaning").innerText = data.breakdown.meaning;
-    document.getElementById("res-display-action-text").innerText = data.action;
+    if (statusBadge) {
+        if (data.final_decision === "BLOCK") {
+            statusBadge.className = "risk-badge risk-badge-danger";
+        } else if (data.final_decision === "STEP_UP") {
+            statusBadge.className = "risk-badge badge stepup";
+        } else {
+            statusBadge.className = "risk-badge badge allow";
+        }
+    }
 
-    const reasonsContainer = document.getElementById("res-display-reasons-list");
-    reasonsContainer.innerHTML = "";
-    (data.reasons || []).forEach(r => {
-        const chip = document.createElement("span");
-        chip.className = "chip";
-        chip.innerText = r;
-        reasonsContainer.appendChild(chip);
-    });
+    // Risk Notes & Alert Box
+    const noteTitle = document.getElementById("fraud-note-title");
+    const noteCopy = document.getElementById("fraud-note-copy");
+    const alertMsg = document.getElementById("fraud-alert-msg");
+
+    if (noteTitle) {
+        if (data.final_decision === "BLOCK") noteTitle.innerText = "High risk detected";
+        else if (data.final_decision === "STEP_UP") noteTitle.innerText = "Verification required";
+        else noteTitle.innerText = "Voice verified";
+    }
+
+    if (noteCopy) noteCopy.innerText = data.action || data.breakdown.meaning;
+    if (alertMsg) alertMsg.innerHTML = `<strong>${data.breakdown.meaning}</strong>`;
+
+    // Breakdown Scores
+    const aiScoreEl = document.getElementById("fraud-ai-score");
+    const matchScoreEl = document.getElementById("fraud-match-score");
+    const trustScoreEl = document.getElementById("fraud-trust-score");
+
+    if (aiScoreEl) aiScoreEl.innerText = `${Math.round(data.breakdown.ai_fake_score)}%`;
+    if (matchScoreEl) matchScoreEl.innerText = `${Math.round(data.breakdown.speaker_match)}%`;
+    if (trustScoreEl) trustScoreEl.innerText = `${Math.round(data.trust)}%`;
+
+    // Reasons Chips
+    const chipsContainer = document.getElementById("fraud-reasons-chips");
+    if (chipsContainer) {
+        chipsContainer.innerHTML = "";
+        (data.reasons || []).forEach(r => {
+            const chip = document.createElement("span");
+            chip.className = "chip";
+            chip.innerText = r;
+            chipsContainer.appendChild(chip);
+        });
+    }
+
+    // Refresh Incident Table
+    loadFraudDeskQueue();
 }
 
-// Jury Demo Panel Wiring (Live Detection View)
+// Jury Demo Panel Wiring (Live Call View)
 function initJuryDemo() {
     const btnReal = document.getElementById("btn-demo-real");
     const btnClone = document.getElementById("btn-demo-clone");
@@ -287,7 +306,9 @@ async function triggerLiveDemoSample(fileName, personCode) {
 
         if (!response.ok) throw new Error("POST /v1/detect failed");
         const data = await response.json();
+        
         updateLiveDetectionUI(data);
+        updateFraudDeskContextUI(data);
     } catch (err) {
         alert(`Live Detection Error: ${err.message}`);
     }
@@ -295,79 +316,33 @@ async function triggerLiveDemoSample(fileName, personCode) {
 
 function updateLiveDetectionUI(data) {
     currentCallRef = data.call_ref;
-    document.getElementById("live-display-call-ref").innerText = data.call_ref;
-    document.getElementById("live-display-person-name").innerText = data.person_claimed || "Rahul Sharma";
-    if (data.official_callback) {
-        document.getElementById("live-display-callback").innerText = data.official_callback;
+
+    const statusPill = document.getElementById("live-status-pill");
+    const meterRing = document.getElementById("live-meter-ring");
+    const riskScoreEl = document.getElementById("live-risk-score");
+    const meaningText = document.getElementById("live-meaning-text");
+    const actionText = document.getElementById("live-action-text");
+
+    const risk = Math.round(data.risk);
+    if (riskScoreEl) riskScoreEl.innerText = risk;
+    if (statusPill) {
+        statusPill.innerText = data.final_decision;
+        statusPill.className = `risk-badge ${data.final_decision === 'BLOCK' ? 'risk-badge-danger' : (data.final_decision === 'STEP_UP' ? 'badge stepup' : 'badge allow')}`;
     }
 
-    const risk = data.risk;
-    document.getElementById("live-display-risk-score").innerText = Math.round(risk);
-    document.getElementById("live-display-ai-score").innerText = Math.round(data.breakdown.ai_fake_score) + "%";
-    document.getElementById("live-display-match-score").innerText = Math.round(data.breakdown.speaker_match) + "%";
-    document.getElementById("live-display-trust-score").innerText = Math.round(data.trust) + "%";
+    let color = "#f56b6b";
+    if (data.final_decision === "ALLOW") color = "#10b981";
+    if (data.final_decision === "STEP_UP") color = "#f59e0b";
 
-    const offset = 264 - (264 * (risk / 100));
-    const circle = document.getElementById("live-meter-circle");
-    circle.style.strokeDashoffset = offset;
-
-    const decisionPill = document.getElementById("live-display-decision-pill");
-    const banner = document.getElementById("live-banner");
-    const bannerTitle = document.getElementById("banner-title");
-    const bannerMsg = document.getElementById("banner-msg");
-    const bannerIcon = document.getElementById("banner-icon");
-    const bannerAction = document.getElementById("banner-action-text");
-
-    banner.className = "alert-banner";
-    if (data.final_decision === "BLOCK") {
-        circle.style.stroke = "#ef4444";
-        decisionPill.innerText = "BLOCK";
-        decisionPill.style.background = "rgba(239, 68, 68, 0.2)";
-        decisionPill.style.color = "#f87171";
-
-        banner.classList.add("banner-block");
-        bannerIcon.innerText = "🚨";
-        bannerTitle.innerText = "CRITICAL RISK: VOICE CLONE SUSPECTED!";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "DO NOT APPROVE FUNDS";
-    } else if (data.final_decision === "STEP_UP") {
-        circle.style.stroke = "#f59e0b";
-        decisionPill.innerText = "STEP_UP";
-        decisionPill.style.background = "rgba(245, 158, 11, 0.2)";
-        decisionPill.style.color = "#fbbf24";
-
-        banner.classList.add("banner-stepup");
-        bannerIcon.innerText = "⚠";
-        bannerTitle.innerText = "STEP-UP VERIFICATION REQUIRED";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "CALLBACK ENROLLED NUMBER";
-    } else {
-        circle.style.stroke = "#10b981";
-        decisionPill.innerText = "ALLOW";
-        decisionPill.style.background = "rgba(16, 185, 129, 0.2)";
-        decisionPill.style.color = "#34d399";
-
-        banner.classList.add("banner-allow");
-        bannerIcon.innerText = "✓";
-        bannerTitle.innerText = "VOICE INTEGRITY VERIFIED";
-        bannerMsg.innerText = data.breakdown.meaning;
-        bannerAction.innerText = "SAFE TO PROCEED";
+    if (meterRing) {
+        meterRing.style.background = `conic-gradient(${color} 0 ${risk}%, #263445 ${risk}% 100%)`;
     }
 
-    document.getElementById("live-display-meaning").innerText = data.breakdown.meaning;
-    document.getElementById("live-display-action-text").innerText = data.action;
-
-    const reasonsContainer = document.getElementById("live-display-reasons-list");
-    reasonsContainer.innerHTML = "";
-    (data.reasons || []).forEach(r => {
-        const chip = document.createElement("span");
-        chip.className = "chip";
-        chip.innerText = r;
-        reasonsContainer.appendChild(chip);
-    });
+    if (meaningText) meaningText.innerText = data.breakdown.meaning;
+    if (actionText) actionText.innerText = data.action;
 }
 
-// Agent Action Decision Override
+// Agent Action Manual Decision Override
 async function handleAgentAction(actionType) {
     try {
         const res = await fetch(`/v1/calls/${currentCallRef}/action`, {
@@ -381,7 +356,7 @@ async function handleAgentAction(actionType) {
         });
         if (res.ok) {
             const data = await res.json();
-            alert(`Action '${actionType}' registered for ${currentCallRef}.\nAudit Hash: ${data.audit_hash.substring(0, 16)}...`);
+            alert(`Action '${actionType}' registered for call ${currentCallRef}.\nAudit Hash: ${data.audit_hash.substring(0, 16)}...`);
             loadFraudDeskQueue();
             loadAuditTrail();
         }
@@ -421,11 +396,14 @@ async function submitEnrollment(e) {
 
         if (res.ok) {
             const data = await res.json();
+            const resBox = document.getElementById("enroll-result-box");
+            if (resBox) resBox.classList.remove("hidden");
+            
             document.getElementById("res-person-id").innerText = data.person_id;
-            document.getElementById("res-quality").innerText = data.quality_score + "%";
+            document.getElementById("res-quality").innerText = Math.round(data.quality_score * 100) / 100 + "%";
             document.getElementById("res-duration").innerText = data.duration_sec + "s";
             document.getElementById("res-hash").innerText = data.audit_hash;
-            document.getElementById("enroll-result").classList.remove("hidden");
+            
             loadTrustedPeople();
             loadAuditTrail();
         }
@@ -434,47 +412,39 @@ async function submitEnrollment(e) {
     }
 }
 
-// Load Overview Data & Feed
-async function loadOverviewData() {
-    const tbody = document.getElementById("overview-feed-body");
+// Load Fraud Desk Queue Table
+async function loadFraudDeskQueue() {
+    const tbody = document.getElementById("fraud-table-body");
+    if (!tbody) return;
     try {
         const res = await fetch("/v1/calls");
         if (res.ok) {
             const calls = await res.json();
             tbody.innerHTML = "";
-            let blockedCount = 0;
-            let stepupCount = 0;
-
-            calls.slice(0, 10).forEach(c => {
-                if (c.decision === "BLOCK") blockedCount++;
-                if (c.decision === "STEP_UP") stepupCount++;
-
+            calls.forEach(c => {
                 const tr = document.createElement("tr");
+                const decisionClass = c.decision.toLowerCase();
                 tr.innerHTML = `
                     <td><strong>${c.call_ref}</strong></td>
-                    <td>${new Date(c.created_at).toLocaleTimeString()}</td>
-                    <td>${c.person_claimed || "Unknown"}</td>
+                    <td>${c.person_claimed || "Rahul Sharma"}</td>
                     <td>${c.intent || "Transfer"}</td>
                     <td>${Math.round(c.ai_fake_score)}%</td>
                     <td>${Math.round(c.speaker_match)}%</td>
                     <td><strong>${Math.round(c.risk)}</strong></td>
-                    <td><span class="badge ${c.decision.toLowerCase()}">${c.decision}</span></td>
+                    <td><span class="badge ${decisionClass}">${c.decision}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            document.getElementById("ov-total-calls").innerText = calls.length;
-            document.getElementById("ov-blocked").innerText = blockedCount;
-            document.getElementById("ov-stepup").innerText = stepupCount;
         }
     } catch (e) {
-        console.warn("Overview feed load fallback");
+        console.warn("Fraud queue load error:", e);
     }
 }
 
-// Load Enrolled People Registry
+// Load Enrolled People Registry Table
 async function loadTrustedPeople() {
     const tbody = document.getElementById("trusted-people-body");
+    if (!tbody) return;
     try {
         const res = await fetch("/v1/people");
         if (res.ok) {
@@ -486,59 +456,22 @@ async function loadTrustedPeople() {
                     <td><strong>${p.person_code}</strong></td>
                     <td>${p.name}</td>
                     <td>${p.role_title}</td>
-                    <td>${p.org}</td>
+                    <td>Union Bank</td>
                     <td class="teal">${p.official_callback}</td>
-                    <td><span class="badge allow">${p.status}</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById("ov-enrolled-count").innerText = people.length;
-        }
-    } catch (e) {
-        console.warn("People registry fallback");
-    }
-}
-
-// Load Fraud Desk Queue
-async function loadFraudDeskQueue() {
-    const tbody = document.getElementById("fraud-queue-body");
-    try {
-        const res = await fetch("/v1/calls");
-        if (res.ok) {
-            const calls = await res.json();
-            tbody.innerHTML = "";
-            calls.forEach(c => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td><strong>${c.call_ref}</strong></td>
-                    <td>${new Date(c.created_at).toLocaleTimeString()}</td>
-                    <td>${c.person_claimed || "Unknown"}</td>
-                    <td>${c.intent || "Transfer"}</td>
-                    <td>${Math.round(c.ai_fake_score)}%</td>
-                    <td>${Math.round(c.speaker_match)}%</td>
-                    <td><strong>${Math.round(c.risk)}</strong></td>
-                    <td><span class="badge ${c.decision.toLowerCase()}">${c.decision}</span></td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="quickOverrideAction('${c.call_ref}', 'BLOCK')">Block</button>
-                        <button class="btn-secondary btn-sm" onclick="quickOverrideAction('${c.call_ref}', 'ALLOW')">Allow</button>
-                    </td>
+                    <td><span class="badge allow">ENROLLED</span></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
     } catch (e) {
-        console.warn("Fraud queue fallback");
+        console.warn("People registry load error:", e);
     }
 }
 
-async function quickOverrideAction(callRef, action) {
-    currentCallRef = callRef;
-    await handleAgentAction(action);
-}
-
-// Load Audit Log Trail
+// Load Audit Log Trail Table
 async function loadAuditTrail() {
     const tbody = document.getElementById("audit-table-body");
+    if (!tbody) return;
     try {
         const res = await fetch("/v1/audit");
         if (res.ok) {
@@ -558,6 +491,6 @@ async function loadAuditTrail() {
             });
         }
     } catch (e) {
-        console.warn("Audit trail fallback");
+        console.warn("Audit trail load error:", e);
     }
 }
