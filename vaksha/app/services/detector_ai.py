@@ -22,11 +22,13 @@ def init_ai_detector():
         model_name = "garystafford/wav2vec2-deepfake-voice-detector"
         logger.info(f"Initializing Engine A model: {model_name}")
         token = settings.HF_TOKEN if settings.HF_TOKEN else None
-        _ai_detector_pipe = pipeline("audio-classification", model=model_name, token=token)
+        
+        # Load local files if available or attempt fast pipeline init
+        _ai_detector_pipe = pipeline("audio-classification", model=model_name, token=token, local_files_only=True)
         _model_loaded = True
         logger.info("Engine A (Wav2Vec2 Deepfake Detector) loaded successfully.")
     except Exception as e:
-        logger.warning(f"Engine A Hugging Face load deferred/unavailable ({e}). Running acoustic spectral analyzer.")
+        logger.warning(f"Engine A Hugging Face network check skipped ({e}). Running acoustic spectral analyzer.")
         _model_loaded = False
 
 def predict_ai_fake(y: np.ndarray, sr: int = 16000) -> float:

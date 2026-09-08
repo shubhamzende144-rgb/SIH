@@ -149,6 +149,10 @@ body {
     color: var(--accent-teal);
 }
 
+.tab-btn.hidden {
+    display: none;
+}
+
 /* Main Content */
 .soc-content {
     flex: 1;
@@ -186,8 +190,57 @@ body {
     color: var(--text-muted);
 }
 
+.sub-header {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
 .margin-top {
     margin-top: 16px;
+}
+
+/* Quick Actions Cards */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.action-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-teal);
+    background: var(--panel-hover);
+}
+
+.icon-box {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.action-card h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.action-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+
+.action-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-teal);
 }
 
 /* Jury Demo Panel */
@@ -600,7 +653,7 @@ canvas#waveform-canvas {
     color: var(--text-muted);
 }
 
-.form-group input {
+.form-group input, .form-group select {
     background: #0f172a;
     border: 1px solid var(--panel-border);
     color: var(--text-main);
@@ -622,6 +675,7 @@ canvas#waveform-canvas {
     justify-content: center;
     gap: 16px;
     margin-top: 14px;
+    flex-wrap: wrap;
 }
 
 .btn-primary {
@@ -642,6 +696,11 @@ canvas#waveform-canvas {
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 11px;
 }
 
 /* KPI Cards */
@@ -747,6 +806,11 @@ canvas#waveform-canvas {
     border-radius: 50%;
     background: var(--status-allow);
     box-shadow: 0 0 6px var(--status-allow);
+}
+
+.teal {
+    color: var(--accent-teal);
+    font-family: var(--font-mono);
 }
 
 .divider {
