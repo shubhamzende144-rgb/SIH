@@ -3,386 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceShield · Voice Intelligence & Impersonation Security Operations</title>
+    <title>VoiceShield · Voice Intelligence</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="satya-app" data-testid="voiceshield-app-shell">
+    <div class="satya-app" data-testid="voiceshield-app">
         <!-- Sidebar Navigation -->
         <aside class="satya-sidebar" data-testid="voiceshield-sidebar">
-            <div class="brand-lockup" data-testid="brand-lockup">
-                <div class="brand-mark" aria-hidden="true">
+            <div class="brand-lockup">
+                <div class="brand-mark">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <path d="M12 8v4"></path>
-                        <path d="M12 16h.01"></path>
+                        <path d="M9 12l2 2 4-4"></path>
                     </svg>
                 </div>
                 <div>
-                    <div class="brand-name" data-testid="brand-name">Voice<span>Shield</span></div>
-                    <div class="brand-caption" data-testid="brand-caption">Voice Intelligence Operations</div>
+                    <div class="brand-name">Voice<span>Shield</span></div>
+                    <div class="brand-caption">VOICE INTELLIGENCE</div>
                 </div>
             </div>
 
-            <div class="sidebar-section-label" data-testid="workspace-label">Security Workspace</div>
+            <div class="sidebar-section-label">WORKSPACE</div>
 
-            <nav class="sidebar-nav" aria-label="Primary navigation" data-testid="primary-navigation">
+            <nav class="sidebar-nav" aria-label="Primary navigation">
                 <button class="sidebar-nav-item is-active" data-tab="tab-overview" onclick="switchTab('tab-overview')">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     <span>Overview</span>
-                </button>
-                <button class="sidebar-nav-item" data-tab="tab-fraud" onclick="switchTab('tab-fraud')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    <span>Fraud Desk</span>
-                </button>
-                <button class="sidebar-nav-item" data-tab="tab-live" onclick="switchTab('tab-live')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
-                    <span>Live Detection</span>
-                    <span class="nav-live-badge">LIVE</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-analyze" onclick="switchTab('tab-analyze')">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     <span>Analyze Voice</span>
                 </button>
+                <button class="sidebar-nav-item" data-tab="tab-live" onclick="switchTab('tab-live')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
+                    <span>Live Detection</span>
+                </button>
                 <button class="sidebar-nav-item" data-tab="tab-trusted" onclick="switchTab('tab-trusted')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     <span>Trusted Voices</span>
                 </button>
-                <button class="sidebar-nav-item" data-tab="tab-audit" onclick="switchTab('tab-audit')">
+                <button class="sidebar-nav-item" data-tab="tab-history" onclick="switchTab('tab-history')">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     <span>Detection History</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-alerts" onclick="switchTab('tab-alerts')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span>Alerts</span>
+                    <span class="nav-alert-badge">3</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-reports" onclick="switchTab('tab-reports')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span>Reports</span>
+                </button>
+                <button class="sidebar-nav-item" data-tab="tab-settings" onclick="switchTab('tab-settings')">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
                 </button>
             </nav>
 
             <div class="sidebar-spacer"></div>
 
-            <div class="sidebar-secure-card" data-testid="sidebar-secure-card">
-                <div class="secure-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                </div>
+            <div class="sidebar-status-box">
+                <div class="status-indicator-dot"></div>
                 <div>
-                    <strong data-testid="secure-card-title">Protected Workspace</strong>
-                    <span data-testid="secure-card-copy">Zero-trust audio verification</span>
+                    <strong>All systems operational</strong>
+                    <span>Last checked less than a minute ago</span>
                 </div>
             </div>
 
-            <div class="sidebar-user" data-testid="sidebar-user-button">
-                <span class="avatar avatar-small">PN</span>
+            <div class="sidebar-user">
+                <span class="avatar">SA</span>
                 <span class="sidebar-user-copy">
-                    <strong data-testid="sidebar-officer-name">Priya Nair</strong>
-                    <span data-testid="sidebar-officer-role">Risk Ops · Union Bank</span>
+                    <strong>Security Admin</strong>
+                    <span>Enterprise workspace</span>
                 </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-more-icon"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <section class="satya-main">
-            <!-- Topbar -->
-            <header class="topbar" data-testid="topbar">
+            <!-- Topbar Header -->
+            <header class="topbar">
                 <div class="topbar-left">
-                    <div class="breadcrumb" data-testid="breadcrumb">
-                        <span>Union Bank SOC</span>
-                        <span class="breadcrumb-divider">/</span>
-                        <strong id="topbar-page-title">Overview</strong>
-                    </div>
+                    <span class="lock-icon">🔒</span>
+                    <span class="workspace-path">Protected environment / <strong>Northstar Financial</strong></span>
                 </div>
 
-                <div class="topbar-search">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" placeholder="Search voice ID, caller, reference..." id="global-search-input">
+                <div class="topbar-right">
+                    <div class="topbar-search">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Search activity...">
+                    </div>
+
+                    <div class="notification-trigger" id="notif-trigger" onclick="toggleNotifications()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span class="notif-dot"></span>
+                    </div>
+
+                    <div class="workspace-dropdown">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                        <span>Northstar Financial</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
+                    </div>
+
+                    <span class="avatar avatar-top">SA</span>
                 </div>
 
-                <div class="topbar-actions">
-                    <div class="system-live" data-testid="system-live-indicator">
-                        <span class="pulse-dot"></span>
-                        LIVE <span class="system-live-copy">monitoring active</span>
+                <!-- Notifications Dropdown Popup -->
+                <div class="notif-dropdown-card hidden" id="notif-dropdown">
+                    <div class="notif-header">
+                        <strong>Notifications</strong>
+                        <span class="notif-unread">3 unread</span>
                     </div>
-                    <div class="topbar-divider"></div>
-                    <button class="topbar-org" data-testid="org-switcher-button">
-                        <span class="org-avatar">UB</span>
-                        <span>Union Bank · Demo</span>
-                    </button>
-                    <span class="avatar avatar-top">PN</span>
+                    <div class="notif-item">
+                        <span class="bullet red"></span>
+                        <span>CFO impersonation attempt blocked</span>
+                    </div>
+                    <div class="notif-item">
+                        <span class="bullet blue"></span>
+                        <span>Trusted voice re-verified</span>
+                    </div>
+                    <div class="notif-item">
+                        <span class="bullet blue"></span>
+                        <span>Weekly report is ready</span>
+                    </div>
                 </div>
             </header>
 
-            <main class="satya-content" data-testid="voiceshield-main-content">
+            <main class="satya-content">
 
-                <!-- VIEW 1: OVERVIEW DASHBOARD (DEFAULT) -->
+                <!-- VIEW 1: OVERVIEW SCREEN (MATCHING SCREENSHOT 1, 2, 3) -->
                 <div id="tab-overview" class="tab-panel active">
-                    <div class="page-heading-row">
-                        <div>
-                            <div class="eyebrow"><span class="eyebrow-line"></span>Voice Intelligence Operations</div>
-                            <h1>Security Operations Overview</h1>
-                            <p>Real-time telemetry and voice impersonation protection stats.</p>
-                        </div>
-                        <div class="heading-meta">
-                            <span class="live-call-chip"><span class="pulse-dot"></span>Active Telemetry</span>
-                            <span class="last-updated">Updated just now</span>
-                        </div>
+                    <div class="page-heading">
+                        <div class="eyebrow">SECURITY COMMAND CENTER</div>
+                        <h1>Voice Security Overview</h1>
+                        <p>Monitor voice authenticity and impersonation threats across your organization.</p>
                     </div>
 
-                    <!-- Hero Telemetry Stat Cards -->
+                    <div class="info-banner-blue">
+                        <div class="info-banner-left">
+                            <span class="info-icon">ⓘ</span>
+                            <span><strong>DEMO MODE</strong> — Showing representative security telemetry. Audio analysis is simulated for this workspace.</span>
+                        </div>
+                        <span class="engine-tag">ENGINE v3.8.1</span>
+                    </div>
+
+                    <!-- 4 Stat Cards -->
                     <div class="stat-cards-grid margin-top">
                         <div class="stat-card">
                             <div class="stat-header">
-                                <span>Total Voice Analyzed</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
+                                <span>Voices Analyzed</span>
+                                <div class="stat-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></div>
                             </div>
-                            <div class="stat-value" id="ov-stat-total">14</div>
-                            <div class="stat-trend positive">↑ 12% from last shift</div>
+                            <div class="stat-value" id="ov-val-analyzed">12,846</div>
+                            <div class="stat-sub font-mono">Compared with last month <span class="trend-up">↗ 12.4%</span></div>
                         </div>
 
-                        <div class="stat-card danger">
+                        <div class="stat-card">
                             <div class="stat-header">
-                                <span>AI Voice Detected</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                                <span>AI Voices Detected</span>
+                                <div class="stat-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
                             </div>
-                            <div class="stat-value text-danger" id="ov-stat-ai">4</div>
-                            <div class="stat-trend negative">28.5% synthetic rate</div>
+                            <div class="stat-value" id="ov-val-ai">1,284</div>
+                            <div class="stat-sub font-mono">10.0% detection rate</div>
                         </div>
 
-                        <div class="stat-card warning">
+                        <div class="stat-card">
                             <div class="stat-header">
-                                <span>Voice Clones Blocked</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <span>High-Risk Attempts</span>
+                                <div class="stat-icon yellow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg></div>
                             </div>
-                            <div class="stat-value text-warning" id="ov-stat-blocked">3</div>
-                            <div class="stat-trend text-warning">Zero financial loss</div>
+                            <div class="stat-value" id="ov-val-risk">37</div>
+                            <div class="stat-sub font-mono">Requires analyst review <span class="trend-up">↗ 8 this week</span></div>
                         </div>
 
-                        <div class="stat-card success">
+                        <div class="stat-card">
                             <div class="stat-header">
-                                <span>Active Trusted Voices</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                <span>Detection Accuracy</span>
+                                <div class="stat-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                             </div>
-                            <div class="stat-value text-success" id="ov-stat-enrolled">2</div>
-                            <div class="stat-trend text-success">192-dim ECAPA voiceprints</div>
+                            <div class="stat-value">98.7%</div>
+                            <div class="stat-sub font-mono">Across 31,204 analyses</div>
                         </div>
                     </div>
 
-                    <!-- Overview Incident Feed & Quick Action Launchers -->
-                    <div class="desk-grid margin-top">
-                        <div class="desk-left-column">
-                            <div class="glass-card">
-                                <div class="card-header">
-                                    <h2>QUICK SECURITY ACTIONS</h2>
+                    <!-- Threat Activity Bar Chart + Security Status Card -->
+                    <div class="overview-two-col margin-top">
+                        <div class="glass-card">
+                            <div class="card-header-clean">
+                                <div>
+                                    <h2>Real-Time Threat Activity</h2>
+                                    <p class="sub-text">Voice analysis volume by detection classification</p>
                                 </div>
-                                <div class="quick-action-list">
-                                    <div class="quick-action-item" onclick="switchTab('tab-analyze')">
-                                        <div class="qa-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
-                                        <div>
-                                            <strong>Analyze Audio File</strong>
-                                            <p>Inspect WAV/MP3 recording for deepfake artifacts.</p>
-                                        </div>
-                                    </div>
-                                    <div class="quick-action-item" onclick="switchTab('tab-live')">
-                                        <div class="qa-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg></div>
-                                        <div>
-                                            <strong>Trigger Live Jury Test</strong>
-                                            <p>Simulate incoming CFO voice stream evaluation.</p>
-                                        </div>
-                                    </div>
-                                    <div class="quick-action-item" onclick="switchTab('tab-trusted')">
-                                        <div class="qa-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg></div>
-                                        <div>
-                                            <strong>Enroll Executive Voice</strong>
-                                            <p>Register speaker embedding into biometric registry.</p>
-                                        </div>
-                                    </div>
+                                <div class="legend-row">
+                                    <span class="legend-item"><span class="dot green"></span> Genuine</span>
+                                    <span class="legend-item"><span class="dot red"></span> AI-generated</span>
+                                    <span class="legend-item"><span class="dot yellow"></span> Suspicious / cloned</span>
+                                </div>
+                            </div>
+
+                            <!-- Bar Chart Visualizer -->
+                            <div class="chart-container">
+                                <div class="bar-chart">
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:64%"></span><span class="b-red" style="height:25%"></span><span class="b-yellow" style="height:12%"></span></div><span class="time-label">06:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:78%"></span><span class="b-red" style="height:28%"></span><span class="b-yellow" style="height:18%"></span></div><span class="time-label">07:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:86%"></span><span class="b-red" style="height:32%"></span><span class="b-yellow" style="height:24%"></span></div><span class="time-label">08:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:96%"></span><span class="b-red" style="height:44%"></span><span class="b-yellow" style="height:30%"></span></div><span class="time-label">09:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:88%"></span><span class="b-red" style="height:36%"></span><span class="b-yellow" style="height:20%"></span></div><span class="time-label">10:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:110%"></span><span class="b-red" style="height:52%"></span><span class="b-yellow" style="height:35%"></span></div><span class="time-label">11:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:104%"></span><span class="b-red" style="height:60%"></span><span class="b-yellow" style="height:40%"></span></div><span class="time-label">12:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:124%"></span><span class="b-red" style="height:56%"></span><span class="b-yellow" style="height:32%"></span></div><span class="time-label">13:00</span></div>
+                                </div>
+                                <div class="chart-footer-row">
+                                    <span>Telemetry window · Last 8 hours</span>
+                                    <span>2,482 events</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="desk-right-column">
-                            <div class="glass-card">
-                                <div class="card-header">
-                                    <h2>RECENT VOICE DETECTION TELEMETRY</h2>
-                                    <button class="btn-secondary btn-sm" onclick="loadOverviewData()">Refresh Telemetry</button>
+                        <!-- Current Security Status Card -->
+                        <div class="glass-card">
+                            <div class="card-header-clean">
+                                <div>
+                                    <h2>Current Security Status</h2>
+                                    <p class="sub-text">All systems are operating normally</p>
                                 </div>
-                                <div class="table-container">
-                                    <table class="soc-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Reference</th>
-                                                <th>Time</th>
-                                                <th>Claimed Speaker</th>
-                                                <th>Intent</th>
-                                                <th>AI Fake %</th>
-                                                <th>Match %</th>
-                                                <th>Risk Score</th>
-                                                <th>Decision</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="overview-feed-body">
-                                            <tr><td colspan="8" class="text-center">Loading telemetry...</td></tr>
-                                        </tbody>
-                                    </table>
+                                <div class="status-shield-mini">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 </div>
                             </div>
+
+                            <div class="protected-big-badge">
+                                <div class="protected-ring">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
+                                <div>
+                                    <h3 class="protected-title">PROTECTED</h3>
+                                    <p class="protected-sub"><span class="dot green"></span> Continuous monitoring active</p>
+                                </div>
+                            </div>
+
+                            <div class="engine-status-list">
+                                <div class="engine-item">
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rx></svg> Voice Detection Engine</span>
+                                    <span class="online-tag"><span class="dot green"></span> Online</span>
+                                </div>
+                                <div class="engine-item">
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg> Audio Analysis</span>
+                                    <span class="online-tag"><span class="dot green"></span> Online</span>
+                                </div>
+                                <div class="engine-item">
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg> Threat Intelligence</span>
+                                    <span class="online-tag"><span class="dot green"></span> Online</span>
+                                </div>
+                                <div class="engine-item">
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg> API Status</span>
+                                    <span class="online-tag"><span class="dot green"></span> Online</span>
+                                </div>
+                            </div>
+                            <div class="telemetry-heartbeat font-mono">Telemetry heartbeat · 24ms</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- VIEW 2: FRAUD DESK (ACTIVE CALL CONTEXT) -->
-                <div id="tab-fraud" class="tab-panel">
-                    <div class="desk-page" data-testid="fraud-desk-page">
-                        <div class="page-heading-row" data-testid="fraud-desk-heading-row">
+                    <!-- Recent Detection Events Table Card -->
+                    <div class="glass-card margin-top">
+                        <div class="card-header-clean">
                             <div>
-                                <div class="eyebrow"><span class="eyebrow-line"></span>High-Risk Call Protection</div>
-                                <h1 data-testid="fraud-desk-heading">Fraud Desk Workspace</h1>
-                                <p data-testid="fraud-desk-description">Real-time voice integrity inspection for high-value financial approvals.</p>
+                                <h2>Recent Detection Events</h2>
+                                <p class="sub-text">Latest activity from your organization</p>
                             </div>
-                            <div class="heading-meta" data-testid="heading-meta">
-                                <span class="live-call-chip"><span class="pulse-dot"></span>Live Call</span>
-                                <span class="last-updated">Updated just now</span>
-                            </div>
+                            <button class="view-all-link" onclick="switchTab('tab-history')">View all &gt;</button>
                         </div>
 
-                        <section class="desk-grid" data-testid="fraud-desk-grid">
-                            <!-- Left Column: Active Call Context Card -->
-                            <div class="desk-left-column">
-                                <div class="glass-card call-context-card" data-testid="call-context-card">
-                                    <div class="card-topline">
-                                        <span class="card-label">Active Call Context</span>
-                                        <span class="risk-badge risk-badge-danger" id="fraud-badge-status">
-                                            <span class="badge-dot"></span><span id="fraud-status-text">BLOCK</span>
-                                        </span>
-                                    </div>
-
-                                    <div class="caller-row">
-                                        <div class="caller-avatar">
-                                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                        </div>
-                                        <div>
-                                            <strong data-testid="caller-name" id="fraud-caller-name">Rahul Sharma</strong>
-                                            <span data-testid="caller-number" id="fraud-caller-phone">+91 98200 88123</span>
-                                        </div>
-                                        <div class="verified-mini" data-testid="caller-verification-state">
-                                            ⚠️ Review
-                                        </div>
-                                    </div>
-
-                                    <div class="context-details" data-testid="call-context-details">
-                                        <div>
-                                            <span>Channel</span>
-                                            <strong>VoIP Phone Call</strong>
-                                        </div>
-                                        <div>
-                                            <span>Amount</span>
-                                            <strong class="amount-value" id="fraud-amount">₹2,50,00,000</strong>
-                                        </div>
-                                        <div>
-                                            <span>Purpose</span>
-                                            <strong id="fraud-intent">High-Value Transfer</strong>
-                                        </div>
-                                    </div>
-
-                                    <!-- Conic Gradient Risk Meter Ring -->
-                                    <div class="risk-meter-wrap" data-testid="risk-meter-section">
-                                        <div class="risk-meter" id="fraud-meter-ring" style="background: conic-gradient(#f56b6b 0 88%, #263445 88% 100%);">
-                                            <div class="risk-meter-inner">
-                                                <span class="risk-number" id="fraud-risk-score">88</span>
-                                                <span class="risk-denom">/ 100</span>
-                                                <span class="risk-caption">risk score</span>
-                                            </div>
-                                        </div>
-                                        <div class="risk-meter-note">
-                                            <span class="risk-note-title" id="fraud-note-title">High Risk Detected</span>
-                                            <span id="fraud-note-copy">Hold approval and verify the caller through official registered channel.</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="context-alert" data-testid="context-alert" id="fraud-alert-box">
-                                        <span id="fraud-alert-msg"><strong>Possible AI Voice Clone Detected.</strong> Do not approve.</span>
-                                    </div>
-
-                                    <!-- Manual Action Buttons -->
-                                    <div class="context-actions" data-testid="call-actions">
-                                        <button class="btn btn-action-danger" onclick="handleAgentAction('BLOCK')">Hold Approval (BLOCK)</button>
-                                        <button class="btn btn-action-warning" onclick="handleAgentAction('STEP_UP')">Request Callback (STEP_UP)</button>
-                                        <button class="btn btn-action-ghost" onclick="handleAgentAction('ALLOW')">Approve Anyway (ALLOW)</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Right Column: Verification Breakdown & History -->
-                            <div class="desk-right-column">
-                                <div class="glass-card">
-                                    <div class="card-header">
-                                        <h2>ENGINE ANALYSIS BREAKDOWN</h2>
-                                        <span class="card-label" id="fraud-call-ref-badge">VK-4419</span>
-                                    </div>
-                                    <div class="breakdown-trio">
-                                        <div class="metric-tile danger">
-                                            <span class="tile-label">AI Fake Score</span>
-                                            <span class="tile-val" id="fraud-ai-score">91%</span>
-                                            <span class="tile-sub">Engine A (Wav2Vec2)</span>
-                                        </div>
-                                        <div class="metric-tile info">
-                                            <span class="tile-label">Speaker Match</span>
-                                            <span class="tile-val" id="fraud-match-score">84%</span>
-                                            <span class="tile-sub">Engine B (ECAPA)</span>
-                                        </div>
-                                        <div class="metric-tile success">
-                                            <span class="tile-label">Fused Confidence</span>
-                                            <span class="tile-val" id="fraud-trust-score">12%</span>
-                                            <span class="tile-sub">Trust Index</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="reasons-wrap">
-                                        <label>ACOUSTIC EXPLAINABILITY REASONS:</label>
-                                        <div class="chips-row" id="fraud-reasons-chips">
-                                            <span class="chip">synthetic_artifacts</span>
-                                            <span class="chip">enrolled_speaker_match_high</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="glass-card margin-top">
-                                    <div class="card-header">
-                                        <h2>RECENT FRAUD DESK INCIDENTS</h2>
-                                        <button class="btn-secondary btn-sm" onclick="loadFraudDeskQueue()">Refresh Queue</button>
-                                    </div>
-                                    <div class="table-container">
-                                        <table class="soc-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Ref</th>
-                                                    <th>Caller</th>
-                                                    <th>Intent</th>
-                                                    <th>AI Fake %</th>
-                                                    <th>Match %</th>
-                                                    <th>Risk</th>
-                                                    <th>Decision</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="fraud-table-body">
-                                                <tr><td colspan="7" class="text-center">Loading incidents...</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+                        <div class="table-container">
+                            <table class="soc-table">
+                                <thead>
+                                    <tr>
+                                        <th>TIME</th>
+                                        <th>CALLER / VOICE ID</th>
+                                        <th>ANALYSIS</th>
+                                        <th>RISK SCORE</th>
+                                        <th>RESULT</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="overview-events-body">
+                                    <tr>
+                                        <td class="font-mono text-muted">09:42:18</td>
+                                        <td><strong>CFO Voice</strong> <span class="voice-id font-mono">#V-2041</span></td>
+                                        <td>Synthetic Voice Analysis</td>
+                                        <td><span class="score-dot red"></span> <strong class="text-red font-mono">92</strong> <span class="text-dim font-mono">/100</span></td>
+                                        <td><span class="badge badge-highrisk">HIGH RISK</span></td>
+                                        <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Review</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-muted">09:37:52</td>
+                                        <td><strong>Employee</strong> <span class="voice-id font-mono">#E-184</span></td>
+                                        <td>Voice Authentication</td>
+                                        <td><span class="score-dot green"></span> <strong class="text-green font-mono">8</strong> <span class="text-dim font-mono">/100</span></td>
+                                        <td><span class="badge badge-genuine">GENUINE</span></td>
+                                        <td><span class="action-link green">Verified</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-muted">09:31:07</td>
+                                        <td><strong>Unknown Caller</strong> <span class="voice-id font-mono">#V-9912</span></td>
+                                        <td>Voice Clone Analysis</td>
+                                        <td><span class="score-dot yellow"></span> <strong class="text-yellow font-mono">76</strong> <span class="text-dim font-mono">/100</span></td>
+                                        <td><span class="badge badge-suspicious">SUSPICIOUS</span></td>
+                                        <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Investigate</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-muted">09:26:44</td>
+                                        <td><strong>Finance Ops</strong> <span class="voice-id font-mono">#E-1175</span></td>
+                                        <td>Transaction Verification</td>
+                                        <td><span class="score-dot green"></span> <strong class="text-green font-mono">18</strong> <span class="text-dim font-mono">/100</span></td>
+                                        <td><span class="badge badge-genuine">GENUINE</span></td>
+                                        <td><span class="action-link green">Verified</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- VIEW 3: LIVE DETECTION (AUDIO STREAM & JURY DEMO) -->
+                <!-- VIEW 2: ANALYZE VOICE SCREEN (MATCHING SCREENSHOT 4) -->
+                <div id="tab-analyze" class="tab-panel">
+                    <div class="page-heading">
+                        <div class="eyebrow">FORENSIC VOICE ANALYSIS</div>
+                        <h1>Analyze Voice</h1>
+                        <p>Upload an audio recording or record a voice sample for authenticity analysis.</p>
+                    </div>
+
+                    <div class="analyze-grid margin-top">
+                        <!-- Left Panel: Dropzone + Form -->
+                        <div class="glass-card">
+                            <div class="analyze-tab-toggle">
+                                <button class="toggle-btn active" id="btn-toggle-upload" onclick="toggleAnalyzeTab('upload')">☁ Upload Audio</button>
+                                <button class="toggle-btn" id="btn-toggle-record" onclick="toggleAnalyzeTab('record')">🎙 Record Voice</button>
+                            </div>
+
+                            <form id="analyze-form" onsubmit="submitVoiceAnalysis(event)">
+                                <div class="upload-dropzone-box margin-top" id="dropzone-area">
+                                    <div class="cloud-icon-circle">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M16 16l-4-4-4 4"></path><path d="M12 12v9"></path><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+                                    </div>
+                                    <h3>Drop an audio recording here</h3>
+                                    <p>or <label for="analyze-file-input" class="browse-link">browse files</label> from your device</p>
+                                    <span class="file-formats font-mono">WAV · MP3 · M4A · MAX 50MB</span>
+                                    <input type="file" id="analyze-file-input" accept="audio/*" class="hidden-file-input" onchange="onFileSelected(this)">
+                                </div>
+
+                                <div class="sample-loader-buttons margin-top">
+                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-clone">Load CFO AI Clone WAV</button>
+                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-real">Load CFO Real WAV</button>
+                                </div>
+
+                                <div class="analyze-controls-row margin-top">
+                                    <span class="sample-length-hint">Recommended sample length: 5–30 seconds</span>
+                                    <button type="submit" class="btn btn-run-red">⚡ Run voice analysis</button>
+                                </div>
+                            </form>
+
+                            <!-- Inline Analysis Result Render Box -->
+                            <div id="analyze-result-render" class="result-render-box hidden margin-top">
+                                <div class="render-header">
+                                    <h3>ANALYSIS FORENSIC RESULT</h3>
+                                    <span class="badge badge-highrisk" id="res-decision-badge">HIGH RISK</span>
+                                </div>
+                                <div class="render-metrics-grid margin-top">
+                                    <div><span>Risk Score</span><strong class="text-red font-mono" id="res-score-risk">93/100</strong></div>
+                                    <div><span>AI Fake Score</span><strong class="font-mono" id="res-score-ai">91%</strong></div>
+                                    <div><span>Speaker Match</span><strong class="font-mono" id="res-score-match">84%</strong></div>
+                                    <div><span>Reference</span><strong class="font-mono" id="res-score-ref">VK-8812</strong></div>
+                                </div>
+                                <p class="render-meaning margin-top" id="res-score-meaning">Voice evaluation complete.</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Guidance Card -->
+                        <div class="glass-card guidance-card">
+                            <div class="card-header-clean">
+                                <div class="guidance-title">
+                                    <span class="info-blue-icon">ⓘ</span>
+                                    <div>
+                                        <h2>For best results</h2>
+                                        <p class="sub-text">Analysis guidance</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="guidance-steps">
+                                <div class="step-item">
+                                    <span class="step-num font-mono">01</span>
+                                    <div>
+                                        <strong>Use clear speech</strong>
+                                        <p>Avoid heavy background noise or music.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <span class="step-num font-mono">02</span>
+                                    <div>
+                                        <strong>Provide context</strong>
+                                        <p>A natural conversation sample is ideal.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <span class="step-num font-mono">03</span>
+                                    <div>
+                                        <strong>Secure processing</strong>
+                                        <p>Samples are encrypted during analysis.</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <span class="step-num font-mono">04</span>
+                                    <div>
+                                        <strong>Explainable result</strong>
+                                        <p>Every risk signal includes a confidence score.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="demo-engine-box margin-top">
+                                <strong>DEMO ANALYSIS ENGINE</strong>
+                                <p>This workspace returns a representative forensic result for demonstration. No audio is sent to a third-party service.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: LIVE DETECTION SCREEN (MATCHING SCREENSHOT 5) -->
                 <div id="tab-live" class="tab-panel">
                     <div class="page-heading-row">
                         <div>
-                            <div class="eyebrow"><span class="eyebrow-line"></span>Real-Time Audio Monitoring</div>
-                            <h1>Live Detection Workspace</h1>
-                            <p>Live stream signal analysis with 1-click jury evaluation controls.</p>
+                            <div class="eyebrow">CONTINUOUS MONITORING</div>
+                            <h1>Live Voice Detection</h1>
+                            <p>Monitor an active voice session with continuously updating authenticity signals.</p>
                         </div>
+                        <span class="listening-badge-red"><span class="dot red"></span> LISTENING</span>
                     </div>
 
-                    <div class="jury-demo-bar">
+                    <!-- SIH Jury Test Controls Bar -->
+                    <div class="jury-demo-bar margin-top">
                         <div class="demo-title">
                             <span class="chip-badge">SIH26104 JURY DEMO PANEL</span>
                             <span>Click to trigger real audio WAV evaluation via /v1/detect:</span>
@@ -394,190 +459,109 @@
                         </div>
                     </div>
 
-                    <div class="desk-grid margin-top">
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <h2>LIVE STREAM AUDIO SIGNAL</h2>
-                                <span class="live-indicator"><span class="pulse-dot"></span> STREAM ACTIVE</span>
+                    <div class="glass-card margin-top live-card">
+                        <div class="live-card-top">
+                            <div class="listening-info">
+                                <span class="listening-pill"><span class="dot red"></span> LISTENING</span>
+                                <span class="session-sub">Inbound session · Channel 04 · 00:02:48</span>
                             </div>
-                            <canvas id="waveform-canvas" width="500" height="90"></canvas>
+                            <span class="session-id font-mono">SESSION LIVE-00482</span>
                         </div>
 
-                        <div class="glass-card">
-                            <div class="card-header">
-                                <h2>REALTIME SPECTRUM DIAGNOSTIC</h2>
-                                <span class="risk-badge risk-badge-danger" id="live-status-pill">BLOCK</span>
+                        <!-- Waveform canvas visualizer -->
+                        <div class="waveform-wrap margin-top">
+                            <canvas id="waveform-canvas" width="800" height="120"></canvas>
+                        </div>
+
+                        <!-- 4 Live Probability Metric Cards -->
+                        <div class="live-metrics-grid margin-top">
+                            <div class="metric-card">
+                                <span class="metric-label">Human probability</span>
+                                <div class="metric-value text-green font-mono" id="live-val-human">12%</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill green" id="live-bar-human" style="width: 12%"></div></div>
                             </div>
-                            <div class="risk-meter-wrap">
-                                <div class="risk-meter" id="live-meter-ring" style="background: conic-gradient(#f56b6b 0 88%, #263445 88% 100%);">
-                                    <div class="risk-meter-inner">
-                                        <span class="risk-number" id="live-risk-score">88</span>
-                                        <span class="risk-denom">/ 100</span>
-                                        <span class="risk-caption">live risk</span>
-                                    </div>
-                                </div>
-                                <div class="risk-meter-note">
-                                    <strong id="live-meaning-text">Sounds like Rahul Sharma, but voice is AI-generated</strong>
-                                    <p id="live-action-text">Do not approve funds. Call back on official registered number.</p>
-                                </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Synthetic probability</span>
+                                <div class="metric-value text-red font-mono" id="live-val-synthetic">88%</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-synthetic" style="width: 88%"></div></div>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Clone probability</span>
+                                <div class="metric-value text-yellow font-mono" id="live-val-clone">91%</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill yellow" id="live-bar-clone" style="width: 91%"></div></div>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Risk score</span>
+                                <div class="metric-value text-red font-mono" id="live-val-risk">93/100</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-risk" style="width: 93%"></div></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW 4: ANALYZE VOICE -->
-                <div id="tab-analyze" class="tab-panel">
-                    <div class="page-heading-row">
-                        <div>
-                            <div class="eyebrow"><span class="eyebrow-line"></span>Deepfake & Voiceprint Inspection</div>
-                            <h1>Analyze Voice Sample</h1>
-                            <p>Upload a WAV/MP3 recording for Engine A (Wav2Vec2) + Engine B (ECAPA-TDNN) scoring.</p>
-                        </div>
-                    </div>
-
-                    <div class="glass-card margin-top">
-                        <form id="analyze-form" onsubmit="submitVoiceAnalysis(event)">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Claimed Identity</label>
-                                    <select id="analyze-person-code">
-                                        <option value="UB-CFO-0192">Rahul Sharma (Chief Financial Officer · UB-CFO-0192)</option>
-                                        <option value="UB-BR-0441">Meera Iyer (Branch Manager · UB-BR-0441)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Transaction Intent</label>
-                                    <input type="text" id="analyze-intent-input" value="High-Value Fund Transfer (₹2.5 Crore)">
-                                </div>
-                                <div class="form-group">
-                                    <label>Transaction Amount (INR)</label>
-                                    <input type="number" id="analyze-amount-input" value="25000000">
-                                </div>
-                                <div class="form-group">
-                                    <label>Caller Telephone</label>
-                                    <input type="text" id="analyze-phone-input" value="+91 98200 88123">
-                                </div>
-                            </div>
-
-                            <div class="upload-dropzone margin-top">
-                                <h3>Upload Voice Audio File</h3>
-                                <p>Select a 16kHz WAV or MP3 audio recording file:</p>
-                                <div class="upload-controls">
-                                    <input type="file" id="analyze-file-input" accept="audio/*">
-                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-clone">Load CFO AI Clone Sample</button>
-                                    <button type="button" class="btn btn-secondary" id="btn-use-cfo-real">Load CFO Real Sample</button>
-                                </div>
-                            </div>
-
-                            <div class="form-footer margin-top">
-                                <button type="submit" class="btn btn-action-danger">Run VoiceShield Integrity Inspection →</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- VIEW 5: TRUSTED VOICES (ENROLLMENT) -->
+                <!-- VIEW 4: TRUSTED VOICES -->
                 <div id="tab-trusted" class="tab-panel">
-                    <div class="page-heading-row">
-                        <div>
-                            <div class="eyebrow"><span class="eyebrow-line"></span>Trusted Speaker Registry</div>
-                            <h1>Enroll Executive Voice</h1>
-                            <p>Extract 192-dim speaker voiceprint embedding with zero raw audio disk storage.</p>
-                        </div>
+                    <div class="page-heading">
+                        <div class="eyebrow">TRUSTED SPEAKER REGISTRY</div>
+                        <h1>Trusted Voices</h1>
+                        <p>Manage enrolled executive voiceprints and speaker verification models.</p>
                     </div>
 
                     <div class="glass-card margin-top">
-                        <form id="enroll-form" onsubmit="submitEnrollment(event)">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Person Code (Unique ID)</label>
-                                    <input type="text" id="enroll-code" value="UB-CFO-0192" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" id="enroll-name" value="Rahul Sharma" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Official Role Title</label>
-                                    <input type="text" id="enroll-role" value="Chief Financial Officer" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Registered Official Callback Number</label>
-                                    <input type="text" id="enroll-callback" value="+91 22 2262 1100" required>
-                                </div>
-                            </div>
-
-                            <div class="upload-dropzone margin-top">
-                                <h3>Enrollment Audio Sample</h3>
-                                <p>Upload clean 10-15s speech sample:</p>
-                                <input type="file" id="enroll-file-input" accept="audio/*">
-                            </div>
-
-                            <div class="form-footer margin-top">
-                                <button type="submit" class="btn btn-action-danger">Extract Voiceprint & Generate Audit Hash</button>
-                            </div>
-                        </form>
-
-                        <div id="enroll-result-box" class="enroll-result-card hidden margin-top">
-                            <h3>✓ VOICEPRINT ENROLLED SUCCESSFULLY</h3>
-                            <p>Person ID: <strong id="res-person-id">1</strong> | Quality: <strong id="res-quality">99.2%</strong> | Duration: <strong id="res-duration">3.5s</strong></p>
-                            <code>SHA-256 Hash: <span id="res-hash">d30ed0bfa...</span></code>
-                        </div>
-                    </div>
-
-                    <div class="glass-card margin-top">
-                        <div class="card-header">
+                        <div class="card-header-clean">
                             <h2>ENROLLED INDIVIDUALS REGISTRY</h2>
-                            <button class="btn-secondary btn-sm" onclick="loadTrustedPeople()">Refresh Registry</button>
+                            <button class="btn-secondary btn-sm" onclick="loadTrustedPeople()">Refresh</button>
                         </div>
-                        <table class="soc-table">
-                            <thead>
-                                <tr>
-                                    <th>Person Code</th>
-                                    <th>Full Name</th>
-                                    <th>Role Title</th>
-                                    <th>Organization</th>
-                                    <th>Official Callback</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="trusted-people-body">
-                                <tr><td colspan="6" class="text-center">Loading enrolled registry...</td></tr>
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="soc-table">
+                                <thead>
+                                    <tr>
+                                        <th>PERSON CODE</th>
+                                        <th>FULL NAME</th>
+                                        <th>ROLE TITLE</th>
+                                        <th>ORGANIZATION</th>
+                                        <th>OFFICIAL CALLBACK</th>
+                                        <th>STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="trusted-people-body">
+                                    <tr><td colspan="6" class="text-center">Loading enrolled registry...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- VIEW 6: DETECTION HISTORY / AUDIT LOG -->
-                <div id="tab-audit" class="tab-panel">
-                    <div class="page-heading-row">
-                        <div>
-                            <div class="eyebrow"><span class="eyebrow-line"></span>Cryptographic Ledger</div>
-                            <h1>Detection History & Audit Log</h1>
-                            <p>Immutable SHA-256 signed event payload records stored in SQLite.</p>
-                        </div>
+                <!-- VIEW 5: DETECTION HISTORY -->
+                <div id="tab-history" class="tab-panel">
+                    <div class="page-heading">
+                        <div class="eyebrow">CRYPTOGRAPHIC AUDIT LEDGER</div>
+                        <h1>Detection History</h1>
+                        <p>Immutable record of all voice evaluations signed with SHA-256 hashes.</p>
                     </div>
 
                     <div class="glass-card margin-top">
-                        <div class="card-header">
-                            <h2>IMMUTABLE AUDIT LOG TRAIL</h2>
+                        <div class="card-header-clean">
+                            <h2>AUDIT TRAIL</h2>
                             <button class="btn-secondary btn-sm" onclick="loadAuditTrail()">Refresh Trail</button>
                         </div>
-                        <table class="soc-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Event Type</th>
-                                    <th>Reference ID</th>
-                                    <th>Payload SHA-256 Hash</th>
-                                    <th>Actor</th>
-                                    <th>Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="audit-table-body">
-                                <tr><td colspan="6" class="text-center">Loading audit log...</td></tr>
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="soc-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>EVENT TYPE</th>
+                                        <th>REF ID</th>
+                                        <th>PAYLOAD SHA-256 HASH</th>
+                                        <th>ACTOR</th>
+                                        <th>TIMESTAMP</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-table-body">
+                                    <tr><td colspan="6" class="text-center">Loading audit log...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -585,7 +569,7 @@
         </section>
     </div>
 
-    <!-- UI Footer reporting engine models and MOCK status -->
+    <!-- System Model Footer -->
     <footer class="satya-footer">
         <div class="footer-status-row">
             <span class="pulse-dot"></span>
