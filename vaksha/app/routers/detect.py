@@ -36,7 +36,7 @@ async def detect_voice_integrity(
         raise HTTPException(status_code=400, detail="Empty audio file provided.")
 
     try:
-        y, sr, duration_sec = load_audio_from_bytes(audio_bytes)
+        y, sr, duration_sec = load_audio_from_bytes(audio_bytes, filename=audio.filename or "")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process audio file: {str(e)}")
 
@@ -55,6 +55,8 @@ async def detect_voice_integrity(
     official_callback = None
     person_claimed_name = "Unknown / Unenrolled"
 
+    candidate_emb = extract_embedding(y, sr)
+
     if person:
         person_claimed_name = person.name
         official_callback = person.official_callback
@@ -63,10 +65,30 @@ async def detect_voice_integrity(
             has_enrollment = True
             try:
                 enrolled_emb = json.loads(voiceprint.embedding_json)
-                candidate_emb = extract_embedding(y, sr)
                 speaker_match = compute_cosine_similarity(candidate_emb, enrolled_emb)
-            except Exception as e:
+            except Exception:
                 speaker_match = 0.0
+    else:
+        # 1-to-N Best Match Search across all enrolled voiceprints in Database
+        all_voiceprints = db.query(Voiceprint).all()
+        best_score = 0.0
+        best_person = None
+        for vp in all_voiceprints:
+            if vp.embedding_json:
+                try:
+                    enrolled_emb = json.loads(vp.embedding_json)
+                    score = compute_cosine_similarity(candidate_emb, enrolled_emb)
+                    if score > best_score:
+                        best_score = score
+                        best_person = vp.person
+                except Exception:
+                    pass
+        if best_person:
+            person = best_person
+            person_claimed_name = person.name
+            official_callback = person.official_callback
+            speaker_match = best_score
+            has_enrollment = True
 
     # Feature Analysis & Explainability Reasons
     reasons = analyze_acoustic_reasons(

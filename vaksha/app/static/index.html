@@ -53,7 +53,7 @@
                 <button class="sidebar-nav-item" data-tab="tab-alerts" onclick="switchTab('tab-alerts')">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                     <span>Alerts</span>
-                    <span class="nav-alert-badge">3</span>
+                    <span class="nav-alert-badge" id="nav-alert-badge">0</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-reports" onclick="switchTab('tab-reports')">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
@@ -162,8 +162,8 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono" id="ov-val-analyzed">12,846</div>
-                            <div class="stat-sub">Compared with last month <span class="trend-up">↗ 12.4%</span></div>
+                            <div class="stat-value font-mono" id="ov-val-analyzed">0</div>
+                            <div class="stat-sub">Real-time evaluated calls</div>
                         </div>
 
                         <div class="stat-card">
@@ -173,8 +173,8 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono" id="ov-val-ai">1,284</div>
-                            <div class="stat-sub">10.0% detection rate</div>
+                            <div class="stat-value font-mono" id="ov-val-ai">0</div>
+                            <div class="stat-sub">Synthetic voice score &gt; 50%</div>
                         </div>
 
                         <div class="stat-card">
@@ -184,19 +184,19 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono" id="ov-val-risk">37</div>
-                            <div class="stat-sub">Requires analyst review <span class="trend-up">↗ 8 this week</span></div>
+                            <div class="stat-value font-mono" id="ov-val-risk">0</div>
+                            <div class="stat-sub">Flagged for analyst review</div>
                         </div>
 
                         <div class="stat-card">
                             <div class="stat-header">
-                                <span>Detection Accuracy</span>
+                                <span>Enrolled Identities</span>
                                 <div class="stat-icon green">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono">98.7%</div>
-                            <div class="stat-sub">Across 31,204 analyses</div>
+                            <div class="stat-value font-mono" id="ov-val-people">0</div>
+                            <div class="stat-sub">Verified voice prints</div>
                         </div>
                     </div>
 
@@ -301,38 +301,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="overview-events-body">
-                                    <tr>
-                                        <td class="font-mono text-muted">09:42:18</td>
-                                        <td><strong>CFO Voice</strong> <span class="voice-id font-mono">#V-2041</span></td>
-                                        <td>Synthetic Voice Analysis</td>
-                                        <td><span class="score-dot red"></span> <strong class="text-red font-mono">92</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-highrisk"><span class="dot red"></span> HIGH RISK</span></td>
-                                        <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Review</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-mono text-muted">09:37:52</td>
-                                        <td><strong>Employee</strong> <span class="voice-id font-mono">#E-184</span></td>
-                                        <td>Voice Authentication</td>
-                                        <td><span class="score-dot green"></span> <strong class="text-green font-mono">8</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-genuine"><span class="dot green"></span> GENUINE</span></td>
-                                        <td><span class="action-link green">Verified</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-mono text-muted">09:31:07</td>
-                                        <td><strong>Unknown Caller</strong> <span class="voice-id font-mono">#V-9912</span></td>
-                                        <td>Voice Clone Analysis</td>
-                                        <td><span class="score-dot yellow"></span> <strong class="text-yellow font-mono">76</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-suspicious"><span class="dot yellow"></span> SUSPICIOUS</span></td>
-                                        <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Investigate</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-mono text-muted">09:26:44</td>
-                                        <td><strong>Finance Ops</strong> <span class="voice-id font-mono">#E-1175</span></td>
-                                        <td>Transaction Verification</td>
-                                        <td><span class="score-dot green"></span> <strong class="text-green font-mono">18</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-genuine"><span class="dot green"></span> GENUINE</span></td>
-                                        <td><span class="action-link green">Verified</span></td>
-                                    </tr>
+                                    <tr><td colspan="6" class="text-center text-dim" style="padding: 30px;">No detection events recorded yet. Perform an analysis in Analyze Voice.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -370,6 +339,13 @@
                                     <p>or <label for="analyze-file-input" class="browse-link">browse files</label> from your device</p>
                                     <span class="file-formats font-mono">WAV · MP3 · M4A · MAX 50MB</span>
                                     <input type="file" id="analyze-file-input" accept="audio/*" class="hidden-file-input" onchange="onFileSelected(this)">
+                                </div>
+
+                                <div class="form-group margin-top-sm" style="margin-top: 15px; margin-bottom: 10px;">
+                                    <label class="form-label" style="display: block; margin-bottom: 6px; font-size: 13px; color: #94a3b8; font-weight: 500;">Target Enrolled Identity (Optional)</label>
+                                    <select id="analyze-person-select" class="select-clean" style="width: 100%; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; color: #f8fafc; font-size: 14px;">
+                                        <option value="">Auto-Detect (Compare against all enrolled voices)</option>
+                                    </select>
                                 </div>
 
                                 <div class="sample-loader-buttons margin-top">
@@ -558,7 +534,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="trusted-people-body">
-                                    <tr><td colspan="7" class="text-center">Loading verified voice identities...</td></tr>
+                                    <tr><td colspan="7" class="text-center text-dim" style="padding: 40px;">No trusted voices yet</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -606,62 +582,8 @@
                         <p>Review flagged AI voice clones, high-risk executive impersonation attempts, and anomaly detections.</p>
                     </div>
 
-                    <div class="alerts-list margin-top">
-                        <div class="glass-card margin-top border-red">
-                            <div class="alert-header">
-                                <div class="alert-title-row">
-                                    <span class="badge badge-highrisk">CRITICAL ALERT</span>
-                                    <h3>Executive Impersonation Attempt Blocked</h3>
-                                </div>
-                                <span class="font-mono text-dim">Just now</span>
-                            </div>
-                            <p class="alert-desc margin-top-sm">Inbound caller attempting ₹2,50,00,000 fund transfer claiming identity of <strong>Rahul Sharma (CFO)</strong>. Neural vocoder artifacts detected by Wav2Vec2 (Engine A: 77.6% Synthetic Probability).</p>
-                            <div class="alert-meta-row font-mono margin-top-sm">
-                                <span>Ref: <strong>VK-8149</strong></span>
-                                <span class="margin-left">Caller: <strong>+91 98200 12345</strong></span>
-                                <span class="margin-left">Decision: <strong class="text-red">BLOCK</strong></span>
-                            </div>
-                            <div class="alert-actions-row margin-top">
-                                <button class="btn-primary btn-sm" onclick="alert('Initiating official callback to CFO registered line (+91 98200 00001)...')">Initiate Official Callback</button>
-                                <button class="btn-secondary btn-sm" onclick="alert('Alert VK-8149 escalated to Fraud Prevention Operations.')">Escalate to Fraud Desk</button>
-                            </div>
-                        </div>
-
-                        <div class="glass-card margin-top border-yellow">
-                            <div class="alert-header">
-                                <div class="alert-title-row">
-                                    <span class="badge badge-suspicious">SUSPICIOUS VOICE</span>
-                                    <h3>Unenrolled Impostor Voice Encountered</h3>
-                                </div>
-                                <span class="font-mono text-dim">14 mins ago</span>
-                            </div>
-                            <p class="alert-desc margin-top-sm">Caller voice print embedding does not match registered executive voiceprint (Engine B speaker match: 3.4%). Requires step-up multi-factor authentication.</p>
-                            <div class="alert-meta-row font-mono margin-top-sm">
-                                <span>Ref: <strong>VK-7390</strong></span>
-                                <span class="margin-left">Caller: <strong>+91 98765 43210</strong></span>
-                                <span class="margin-left">Decision: <strong class="text-yellow">STEP_UP</strong></span>
-                            </div>
-                            <div class="alert-actions-row margin-top">
-                                <button class="btn-secondary btn-sm" onclick="alert('Step-Up OTP challenge dispatched to caller.')">Send OTP Challenge</button>
-                                <button class="btn-secondary btn-sm" onclick="alert('Alert dismissed.')">Dismiss</button>
-                            </div>
-                        </div>
-
-                        <div class="glass-card margin-top border-blue">
-                            <div class="alert-header">
-                                <div class="alert-title-row">
-                                    <span class="badge badge-genuine">SYSTEM NOTICE</span>
-                                    <h3>Engine Model Update Verified</h3>
-                                </div>
-                                <span class="font-mono text-dim">1 hour ago</span>
-                            </div>
-                            <p class="alert-desc margin-top-sm">Local open-source ML models (Wav2Vec2 Deepfake Detector & SpeechBrain ECAPA-TDNN) initialized with 100% offline accuracy integrity.</p>
-                            <div class="alert-meta-row font-mono margin-top-sm">
-                                <span>Engine A: <strong>garystafford/wav2vec2-deepfake-voice-detector</strong></span>
-                                <br>
-                                <span>Engine B: <strong>speechbrain/spkrec-ecapa-voxceleb</strong></span>
-                            </div>
-                        </div>
+                    <div class="alerts-list margin-top" id="alerts-list-container">
+                        <div class="glass-card text-center text-dim" style="padding: 40px;">No threat alerts recorded yet. High-risk voice evaluations will appear here.</div>
                     </div>
                 </div>
 

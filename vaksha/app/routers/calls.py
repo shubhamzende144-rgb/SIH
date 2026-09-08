@@ -17,6 +17,42 @@ def list_enrolled_people(db: Session = Depends(get_db)):
     """
     return db.query(Person).order_by(Person.id.desc()).all()
 
+from app.config import settings
+import logging
+logger = logging.getLogger("vaksha.calls")
+
+@router.delete("/people/{person_code}")
+def remove_enrolled_person(person_code: str, db: Session = Depends(get_db)):
+    """
+    Removes a trusted voice identity.
+    """
+    person = db.query(Person).filter(Person.person_code == person_code).first()
+    if not person:
+        raise HTTPException(status_code=404, detail="Person not found")
+
+    # Unlink any calls to prevent foreign key errors
+    calls = db.query(Call).filter(Call.claimed_person_id == person.id).all()
+    for c in calls:
+        c.claimed_person_id = None
+    
+    db.delete(person)
+    db.commit()
+
+    # Try deleting from Supabase
+    url = settings.SUPABASE_URL
+    key = settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
+    if url and key and "xxxx" not in url:
+        try:
+            from supabase import create_client
+            sb = create_client(url, key)
+            sb.table("voiceprints").delete().eq("person_code", person_code).execute()
+            sb.table("people").delete().eq("person_code", person_code).execute()
+            logger.info(f"Deleted {person_code} from Supabase")
+        except Exception as e:
+            logger.warning(f"Failed to delete from Supabase: {e}")
+
+    return {"ok": True, "message": f"Deleted {person_code}"}
+
 @router.get("/calls", response_model=List[CallSchema])
 def list_calls_history(db: Session = Depends(get_db)):
     """

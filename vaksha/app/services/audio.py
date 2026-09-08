@@ -7,11 +7,20 @@ import soundfile as sf
 
 TARGET_SR = 16000
 
-def load_audio_from_bytes(audio_bytes: bytes) -> tuple[np.ndarray, int, float]:
+def load_audio_from_bytes(audio_bytes: bytes, filename: str = "") -> tuple[np.ndarray, int, float]:
     """
     Loads raw audio bytes, resamples to 16kHz mono PCM, returns (y_mono, sr, duration_sec).
     """
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+    # Determine suffix from filename or magic bytes
+    suffix = ".wav"
+    if filename:
+        ext = os.path.splitext(filename)[1].lower()
+        if ext in (".mp3", ".m4a", ".ogg", ".flac", ".webm"):
+            suffix = ext
+    elif audio_bytes[:3] == b'ID3' or audio_bytes[:2] == b'\xff\xfb':
+        suffix = ".mp3"
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp.write(audio_bytes)
         tmp_path = tmp.name
 

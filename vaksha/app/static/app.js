@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     checkHealthStatus();
     loadOverviewData();
     loadTrustedPeople();
+    loadAlertsData();
     loadAuditTrail();
 });
 
@@ -74,6 +75,7 @@ function switchTab(tabId) {
 
     if (tabId === "tab-overview") loadOverviewData();
     if (tabId === "tab-trusted") loadTrustedPeople();
+    if (tabId === "tab-alerts") loadAlertsData();
     if (tabId === "tab-history") loadAuditTrail();
 }
 
@@ -185,27 +187,63 @@ function initAnalyzeFormHelpers() {
 // Load Overview Telemetry Stats & Table
 async function loadOverviewData() {
     try {
-        const res = await fetch("/v1/calls");
-        if (res.ok) {
-            const calls = await res.json();
-            
-            let aiCount = 0;
-            let riskCount = 0;
-            calls.forEach(c => {
-                if (c.ai_fake_score > 50) aiCount++;
-                if (c.risk > 70) riskCount++;
-            });
+        const [callsRes, peopleRes] = await Promise.all([
+            fetch("/v1/calls"),
+            fetch("/v1/people")
+        ]);
 
-            const valAnalyzed = document.getElementById("ov-val-analyzed");
-            const valAi = document.getElementById("ov-val-ai");
-            const valRisk = document.getElementById("ov-val-risk");
+        let calls = [];
+        let people = [];
+        if (callsRes.ok) calls = await callsRes.json();
+        if (peopleRes.ok) people = await peopleRes.json();
 
-            if (valAnalyzed) valAnalyzed.innerText = (12840 + calls.length).toLocaleString();
-            if (valAi) valAi.innerText = (1280 + aiCount).toLocaleString();
-            if (valRisk) valRisk.innerText = (30 + riskCount).toString();
+        let aiCount = 0;
+        let riskCount = 0;
+        calls.forEach(c => {
+            if (c.ai_fake_score > 50) aiCount++;
+            if (c.risk > 70) riskCount++;
+        });
+
+        const valAnalyzed = document.getElementById("ov-val-analyzed");
+        const valAi = document.getElementById("ov-val-ai");
+        const valRisk = document.getElementById("ov-val-risk");
+        const valPeople = document.getElementById("ov-val-people");
+
+        if (valAnalyzed) valAnalyzed.innerText = calls.length.toLocaleString();
+        if (valAi) valAi.innerText = aiCount.toLocaleString();
+        if (valRisk) valRisk.innerText = riskCount.toLocaleString();
+        if (valPeople) valPeople.innerText = people.length.toLocaleString();
+
+        const tbody = document.getElementById("overview-events-body");
+        if (tbody) {
+            if (calls.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-dim" style="padding: 30px;">No detection events recorded yet. Perform an analysis in Analyze Voice.</td></tr>`;
+            } else {
+                tbody.innerHTML = "";
+                calls.slice(0, 5).forEach(c => {
+                    const tr = document.createElement("tr");
+                    const timeStr = c.created_at ? new Date(c.created_at).toLocaleTimeString() : "--:--:--";
+                    const riskVal = Math.round(c.risk || 0);
+                    const isHighRisk = c.decision === 'BLOCK' || riskVal > 70;
+                    const isSuspicious = c.decision === 'STEP_UP' || (riskVal > 40 && riskVal <= 70);
+                    const badgeClass = isHighRisk ? 'badge-highrisk' : (isSuspicious ? 'badge-suspicious' : 'badge-genuine');
+                    const dotClass = isHighRisk ? 'red' : (isSuspicious ? 'yellow' : 'green');
+                    const textClass = isHighRisk ? 'text-red' : (isSuspicious ? 'text-yellow' : 'text-green');
+
+                    tr.innerHTML = `
+                        <td class="font-mono text-muted">${timeStr}</td>
+                        <td><strong>${c.person_claimed || 'Unknown'}</strong> <span class="voice-id font-mono">#${c.call_ref}</span></td>
+                        <td>${c.intent || 'Synthetic Voice Analysis'}</td>
+                        <td><span class="score-dot ${dotClass}"></span> <strong class="${textClass} font-mono">${riskVal}</strong> <span class="text-dim font-mono">/100</span></td>
+                        <td><span class="badge ${badgeClass}"><span class="dot ${dotClass}"></span> ${c.decision}</span></td>
+                        <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Review</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
         }
     } catch (e) {
-        console.warn("Overview data load fallback:", e);
+        console.warn("Overview data load error:", e);
     }
 }
 
@@ -213,6 +251,7 @@ async function loadOverviewData() {
 async function submitVoiceAnalysis(e) {
     e.preventDefault();
     const fileInput = document.getElementById("analyze-file-input");
+    const selectedPersonCode = document.getElementById("analyze-person-select")?.value || "";
 
     let audioBlob = selectedAnalyzeBlob;
     let fileName = "sample.wav";
@@ -230,7 +269,9 @@ async function submitVoiceAnalysis(e) {
 
     const formData = new FormData();
     formData.append("audio", audioBlob, fileName);
-    formData.append("person_code", "UB-CFO-0192");
+    if (selectedPersonCode) {
+        formData.append("person_code", selectedPersonCode);
+    }
     formData.append("intent", "Executive Voice Impersonation Analysis");
     formData.append("amount_inr", "25000000");
 
@@ -252,13 +293,18 @@ async function submitVoiceAnalysis(e) {
         document.getElementById("res-score-ai").innerText = `${Math.round(data.breakdown.ai_fake_score)}%`;
         document.getElementById("res-score-match").innerText = `${Math.round(data.breakdown.speaker_match)}%`;
         document.getElementById("res-score-ref").innerText = data.call_ref;
-        document.getElementById("res-score-meaning").innerText = data.breakdown.meaning;
+        document.getElementById("res-score-meaning").innerText = `Voice evaluation complete. Person: ${data.person_claimed}. Decision: ${data.final_decision}.`;
 
         const decisionBadge = document.getElementById("res-decision-badge");
         if (decisionBadge) {
             decisionBadge.innerText = data.final_decision;
             decisionBadge.className = `badge ${data.final_decision === 'BLOCK' ? 'badge-highrisk' : (data.final_decision === 'STEP_UP' ? 'badge-suspicious' : 'badge-genuine')}`;
         }
+
+        // Refresh dynamic UI views across all tabs
+        loadOverviewData();
+        loadAlertsData();
+        loadAuditTrail();
     } catch (err) {
         alert(`Voice Analysis Error: ${err.message}`);
     }
@@ -387,8 +433,8 @@ async function submitVoiceEnrollment(e) {
     const callback = document.getElementById("enroll-callback").value.trim();
 
     if (!enrollAudioBlob) {
-        const res = await fetch("/data/samples/cfo_real.wav");
-        enrollAudioBlob = await res.blob();
+        alert("Please select or record an audio sample first.");
+        return;
     }
 
     const formData = new FormData();
@@ -397,7 +443,7 @@ async function submitVoiceEnrollment(e) {
     formData.append("role_title", role);
     formData.append("org", "Union Bank Demo");
     formData.append("official_callback", callback);
-    formData.append("audio", enrollAudioBlob, `${code}.wav`);
+    formData.append("audio", enrollAudioBlob, enrollAudioBlob.name || `${code}.wav`);
 
     const submitBtn = document.getElementById("btn-submit-enroll");
     if (submitBtn) { submitBtn.innerText = "Enrolling ML Voiceprint..."; submitBtn.disabled = true; }
@@ -408,18 +454,19 @@ async function submitVoiceEnrollment(e) {
             body: formData
         });
 
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.detail || "Enrollment failed");
+        const data = await response.json();
+
+        if (!data.ok) {
+            throw new Error(data.error || `Enrollment failed (HTTP ${response.status})`);
         }
 
-        const data = await response.json();
-        alert(`✓ Voiceprint successfully enrolled for ${name} (${code})! SHA-256 Audit Hash: ${data.audit_hash.slice(0, 16)}...`);
+        alert(`✓ Voiceprint enrolled for ${name} (${code})!\nSHA-256: ${data.audit_hash.slice(0, 16)}...`);
         
         closeRegisterVoiceModal();
         document.getElementById("form-register-voice").reset();
         enrollAudioBlob = null;
         loadTrustedPeople();
+        loadOverviewData();
     } catch (err) {
         alert(`Enrollment Error: ${err.message}`);
     } finally {
@@ -440,15 +487,14 @@ function renderPeopleRows(people) {
     tbody.innerHTML = "";
 
     if (people.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-dim">No trusted voice identities found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-dim" style="padding: 40px;">No trusted voices yet</td></tr>`;
         return;
     }
 
-    people.forEach((p, idx) => {
+    people.forEach((p) => {
         const initials = getInitials(p.name);
         const tr = document.createElement("tr");
         const statusClass = p.status === "REVIEW" ? "badge-suspicious" : "badge-genuine";
-        const samplesCount = idx % 2 === 0 ? "5 samples" : "8 samples";
         
         tr.innerHTML = `
             <td>
@@ -459,7 +505,7 @@ function renderPeopleRows(people) {
             </td>
             <td>${p.role_title}</td>
             <td><code class="font-mono text-cyan">${p.person_code}</code></td>
-            <td><span class="text-dim font-mono">${samplesCount}</span></td>
+            <td><span class="text-dim font-mono">1 voiceprint</span></td>
             <td>
                 <span class="flex-align text-green font-mono" style="font-size: 11.5px;">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -470,6 +516,9 @@ function renderPeopleRows(people) {
             <td>
                 <button class="btn-icon" onclick="alert('Voiceprint Profile: ${p.name}\\nPerson Code: ${p.person_code}\\nCallback: ${p.official_callback}\\nConsent: GRANTED')" title="View identity details">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button class="btn-icon" onclick="deletePerson('${p.person_code}', '${p.name.replace(/'/g, "\\'")}')" title="Remove identity" style="margin-left: 8px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
             </td>
         `;
@@ -484,6 +533,18 @@ async function loadTrustedPeople() {
         if (res.ok) {
             globalPeopleCache = await res.json();
             renderPeopleRows(globalPeopleCache);
+
+            const personSelect = document.getElementById("analyze-person-select");
+            if (personSelect) {
+                let opts = '<option value="">Auto-Detect (Compare against all enrolled voices)</option>';
+                globalPeopleCache.forEach(p => {
+                    opts += `<option value="${p.person_code}">${p.name} (${p.role_title} - ${p.person_code})</option>`;
+                });
+                personSelect.innerHTML = opts;
+            }
+
+            const valPeople = document.getElementById("ov-val-people");
+            if (valPeople) valPeople.innerText = globalPeopleCache.length.toLocaleString();
         }
     } catch (e) {
         console.warn("People registry load error:", e);
@@ -501,6 +562,24 @@ function filterPeopleTable() {
     });
 
     renderPeopleRows(filtered);
+}
+
+async function deletePerson(personCode, personName) {
+    if (!confirm(`Are you sure you want to remove the trusted voice for ${personName} (${personCode})?`)) {
+        return;
+    }
+    try {
+        const res = await fetch(`/v1/people/${personCode}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.detail || data.message || "Failed to delete person");
+        }
+        alert(data.message || `Deleted ${personCode}`);
+        loadTrustedPeople();
+        loadOverviewData();
+    } catch (e) {
+        alert("Error deleting person: " + e.message);
+    }
 }
 
 // Load Audit Trail
@@ -527,5 +606,59 @@ async function loadAuditTrail() {
         }
     } catch (e) {
         console.warn("Audit trail load error:", e);
+    }
+}
+
+// Load Dynamic Security Alerts from /v1/calls
+async function loadAlertsData() {
+    const container = document.getElementById("alerts-list-container");
+    const badgeEl = document.getElementById("nav-alert-badge");
+    if (!container) return;
+
+    try {
+        const res = await fetch("/v1/calls");
+        if (res.ok) {
+            const calls = await res.json();
+            const alertCalls = calls.filter(c => c.risk > 50 || c.decision !== 'ALLOW');
+
+            if (badgeEl) badgeEl.innerText = alertCalls.length.toString();
+
+            if (alertCalls.length === 0) {
+                container.innerHTML = `<div class="glass-card text-center text-dim" style="padding: 40px;">No threat alerts recorded yet. High-risk voice evaluations will appear here.</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            alertCalls.forEach(c => {
+                const borderClass = c.decision === 'BLOCK' ? 'border-red' : 'border-yellow';
+                const badgeClass = c.decision === 'BLOCK' ? 'badge-highrisk' : 'badge-suspicious';
+                const decisionColor = c.decision === 'BLOCK' ? 'text-red' : 'text-yellow';
+                const title = c.decision === 'BLOCK' ? 'Executive Impersonation Attempt Blocked' : 'Suspicious Voice Encountered';
+                const card = document.createElement("div");
+                card.className = `glass-card margin-top ${borderClass}`;
+                card.innerHTML = `
+                    <div class="alert-header">
+                        <div class="alert-title-row">
+                            <span class="badge ${badgeClass}">${c.decision} ALERT</span>
+                            <h3>${title}</h3>
+                        </div>
+                        <span class="font-mono text-dim">${c.created_at ? new Date(c.created_at).toLocaleTimeString() : 'Just now'}</span>
+                    </div>
+                    <p class="alert-desc margin-top-sm">Voice analysis for <strong>${c.person_claimed || 'Unknown Caller'}</strong> flagged high synthetic probability (${Math.round(c.ai_fake_score)}%) and speaker match (${Math.round(c.speaker_match)}%).</p>
+                    <div class="alert-meta-row font-mono margin-top-sm">
+                        <span>Ref: <strong>#${c.call_ref}</strong></span>
+                        <span class="margin-left">Caller: <strong>${c.caller_number || '+91 98200 12345'}</strong></span>
+                        <span class="margin-left">Decision: <strong class="${decisionColor}">${c.decision}</strong></span>
+                    </div>
+                    <div class="alert-actions-row margin-top">
+                        <button class="btn-primary btn-sm" onclick="alert('Initiating callback to ${c.person_claimed || 'registered line'}...')">Initiate Callback</button>
+                        <button class="btn-secondary btn-sm" onclick="alert('Alert #${c.call_ref} escalated to Security Desk.')">Escalate Alert</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+    } catch (e) {
+        console.warn("Alerts load error:", e);
     }
 }
