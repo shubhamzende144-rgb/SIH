@@ -1,4 +1,4 @@
-/* SatyaVani / Vaksha Dark SOC UI Design System */
+/* VoiceShield Dark SOC UI Design System */
 :root {
     --bg-dark: #0b1017;
     --panel-bg: #121927;
@@ -34,7 +34,7 @@ html, body {
     color: var(--text-main);
     font-family: var(--font-sans);
     min-height: 100vh;
-    width: 100%;
+    width: 100vw;
     overflow-x: hidden;
 }
 
@@ -64,22 +64,22 @@ html, body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding-bottom: 24px;
+    padding-bottom: 20px;
     margin-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(129, 255, 137, 0.3);
-    color: var(--accent-green);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: var(--accent-blue);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 12px rgba(129, 255, 137, 0.15);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.2);
 }
 
 .brand-name {
@@ -90,17 +90,17 @@ html, body {
 }
 
 .brand-name span {
-    color: var(--accent-green);
+    color: var(--accent-blue);
 }
 
 .brand-caption {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-muted);
     font-weight: 400;
 }
 
 .sidebar-section-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -123,7 +123,7 @@ html, body {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
     font-family: var(--font-sans);
     cursor: pointer;
@@ -138,9 +138,9 @@ html, body {
 }
 
 .sidebar-nav-item.is-active, .sidebar-nav-item.active {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--accent-green);
-    border: 1px solid rgba(129, 255, 137, 0.2);
+    background: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .sidebar-nav-item svg {
@@ -150,7 +150,7 @@ html, body {
 
 .sidebar-nav-item.is-active svg {
     opacity: 1;
-    stroke: var(--accent-green);
+    stroke: #60a5fa;
 }
 
 .nav-live-badge {
@@ -184,8 +184,8 @@ html, body {
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--accent-teal);
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--accent-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,8 +219,8 @@ html, body {
     height: 32px;
     border-radius: 50%;
     background: #1e293b;
-    border: 1px solid var(--accent-teal);
-    color: var(--accent-green);
+    border: 1px solid var(--accent-blue);
+    color: #60a5fa;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -263,7 +263,7 @@ html, body {
 }
 
 .breadcrumb {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--text-muted);
     display: flex;
     align-items: center;
@@ -277,6 +277,27 @@ html, body {
 .breadcrumb strong {
     color: #ffffff;
     font-weight: 600;
+}
+
+.topbar-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(11, 16, 23, 0.8);
+    border: 1px solid var(--panel-border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    width: 300px;
+    color: var(--text-muted);
+}
+
+.topbar-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 12.5px;
+    width: 100%;
 }
 
 .topbar-actions {
@@ -383,14 +404,14 @@ html, body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: var(--accent-green);
+    color: var(--accent-blue);
     margin-bottom: 4px;
 }
 
 .eyebrow-line {
     width: 12px;
     height: 2px;
-    background: var(--accent-green);
+    background: var(--accent-blue);
     border-radius: 1px;
 }
 
@@ -429,6 +450,103 @@ html, body {
 .last-updated {
     font-size: 12px;
     color: var(--text-dim);
+}
+
+/* Stat Cards */
+.stat-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1000px) {
+    .stat-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stat-card {
+    background: rgba(18, 25, 39, 0.75);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 18px;
+    backdrop-filter: blur(12px);
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: #ffffff;
+    margin: 8px 0 4px 0;
+}
+
+.stat-trend {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.stat-trend.positive { color: var(--accent-blue); }
+.text-danger { color: var(--status-block); }
+.text-warning { color: var(--status-stepup); }
+.text-success { color: var(--accent-green); }
+
+/* Quick Action Items */
+.quick-action-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quick-action-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(11, 16, 23, 0.6);
+    border: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.quick-action-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--accent-blue);
+}
+
+.qa-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.quick-action-item strong {
+    display: block;
+    font-size: 13.5px;
+    color: #ffffff;
+}
+
+.quick-action-item p {
+    font-size: 11.5px;
+    color: var(--text-muted);
 }
 
 /* Grid Layouts */
@@ -491,7 +609,7 @@ html, body {
     font-family: var(--font-mono);
 }
 
-/* Call Context Card Specifics */
+/* Call Context Card */
 .call-context-card {
     border: 1px solid rgba(245, 107, 107, 0.25);
     background: linear-gradient(180deg, rgba(245, 107, 107, 0.04) 0%, rgba(18, 25, 39, 0.85) 100%);
@@ -960,7 +1078,7 @@ canvas#waveform-canvas {
 }
 
 .form-group input:focus, .form-group select:focus {
-    border-color: var(--accent-teal);
+    border-color: var(--accent-blue);
 }
 
 .upload-dropzone {
@@ -1078,7 +1196,7 @@ canvas#waveform-canvas {
 }
 
 .teal {
-    color: var(--accent-green);
+    color: var(--accent-blue);
     font-family: var(--font-mono);
 }
 

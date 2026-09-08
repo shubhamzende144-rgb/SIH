@@ -1,4 +1,4 @@
-// SatyaVani / Vaksha Voice Integrity Application Logic
+// VoiceShield Voice Intelligence & Security Application Logic
 
 let currentCallRef = "VK-4419";
 let activePersonaEmail = "priya.nair@unionbank.in";
@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initJuryDemo();
     initAnalyzeFormHelpers();
     checkHealthStatus();
+    loadOverviewData();
     loadFraudDeskQueue();
     loadTrustedPeople();
     loadAuditTrail();
@@ -59,15 +60,17 @@ function switchTab(tabId) {
     const topbarTitle = document.getElementById("topbar-page-title");
     if (topbarTitle) {
         const titleMap = {
-            "tab-fraud": "Fraud desk",
-            "tab-live": "Live call",
-            "tab-analyze": "Analyze voice",
-            "tab-trusted": "Enroll voice",
-            "tab-audit": "Audit log"
+            "tab-overview": "Overview",
+            "tab-fraud": "Fraud Desk",
+            "tab-live": "Live Detection",
+            "tab-analyze": "Analyze Voice",
+            "tab-trusted": "Trusted Voices",
+            "tab-audit": "Detection History"
         };
         if (titleMap[tabId]) topbarTitle.innerText = titleMap[tabId];
     }
 
+    if (tabId === "tab-overview") loadOverviewData();
     if (tabId === "tab-fraud") loadFraudDeskQueue();
     if (tabId === "tab-trusted") loadTrustedPeople();
     if (tabId === "tab-audit") loadAuditTrail();
@@ -93,7 +96,7 @@ function initWaveform() {
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "#81ff89";
+        ctx.strokeStyle = "#3b82f6";
         ctx.beginPath();
 
         const width = canvas.width;
@@ -137,6 +140,55 @@ function initAnalyzeFormHelpers() {
             selectedAnalyzeBlob = await res.blob();
             alert("Loaded CFO Real Sample (cfo_real.wav) into Analyzer!");
         });
+    }
+}
+
+// Load Overview Telemetry Stats & Feed
+async function loadOverviewData() {
+    const tbody = document.getElementById("overview-feed-body");
+    try {
+        const res = await fetch("/v1/calls");
+        if (res.ok) {
+            const calls = await res.json();
+            
+            // Stat Cards
+            let aiCount = 0;
+            let blockedCount = 0;
+            calls.forEach(c => {
+                if (c.ai_fake_score > 50) aiCount++;
+                if (c.decision === "BLOCK") blockedCount++;
+            });
+
+            const statTotalEl = document.getElementById("ov-stat-total");
+            const statAiEl = document.getElementById("ov-stat-ai");
+            const statBlockedEl = document.getElementById("ov-stat-blocked");
+
+            if (statTotalEl) statTotalEl.innerText = calls.length;
+            if (statAiEl) statAiEl.innerText = aiCount;
+            if (statBlockedEl) statBlockedEl.innerText = blockedCount;
+
+            // Feed Table
+            if (tbody) {
+                tbody.innerHTML = "";
+                calls.slice(0, 10).forEach(c => {
+                    const tr = document.createElement("tr");
+                    const decisionClass = c.decision.toLowerCase();
+                    tr.innerHTML = `
+                        <td><strong>${c.call_ref}</strong></td>
+                        <td>${new Date(c.created_at).toLocaleTimeString()}</td>
+                        <td>${c.person_claimed || "Rahul Sharma"}</td>
+                        <td>${c.intent || "Transfer"}</td>
+                        <td>${Math.round(c.ai_fake_score)}%</td>
+                        <td>${Math.round(c.speaker_match)}%</td>
+                        <td><strong>${Math.round(c.risk)}</strong></td>
+                        <td><span class="badge ${decisionClass}">${c.decision}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+    } catch (e) {
+        console.warn("Overview feed load error:", e);
     }
 }
 
@@ -244,9 +296,9 @@ function updateFraudDeskContextUI(data) {
     const alertMsg = document.getElementById("fraud-alert-msg");
 
     if (noteTitle) {
-        if (data.final_decision === "BLOCK") noteTitle.innerText = "High risk detected";
-        else if (data.final_decision === "STEP_UP") noteTitle.innerText = "Verification required";
-        else noteTitle.innerText = "Voice verified";
+        if (data.final_decision === "BLOCK") noteTitle.innerText = "High Risk Detected";
+        else if (data.final_decision === "STEP_UP") noteTitle.innerText = "Verification Required";
+        else noteTitle.innerText = "Voice Verified";
     }
 
     if (noteCopy) noteCopy.innerText = data.action || data.breakdown.meaning;
@@ -273,11 +325,12 @@ function updateFraudDeskContextUI(data) {
         });
     }
 
-    // Refresh Incident Table
+    // Refresh Incident Table & Telemetry
     loadFraudDeskQueue();
+    loadOverviewData();
 }
 
-// Jury Demo Panel Wiring (Live Call View)
+// Jury Demo Panel Wiring (Live Detection View)
 function initJuryDemo() {
     const btnReal = document.getElementById("btn-demo-real");
     const btnClone = document.getElementById("btn-demo-clone");
@@ -358,6 +411,7 @@ async function handleAgentAction(actionType) {
             const data = await res.json();
             alert(`Action '${actionType}' registered for call ${currentCallRef}.\nAudit Hash: ${data.audit_hash.substring(0, 16)}...`);
             loadFraudDeskQueue();
+            loadOverviewData();
             loadAuditTrail();
         }
     } catch (e) {
@@ -458,10 +512,13 @@ async function loadTrustedPeople() {
                     <td>${p.role_title}</td>
                     <td>Union Bank</td>
                     <td class="teal">${p.official_callback}</td>
-                    <td><span class="badge allow">ENROLLED</span></td>
+                    <td><span class="badge allow">ACTIVE</span></td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            const enrolledStatEl = document.getElementById("ov-stat-enrolled");
+            if (enrolledStatEl) enrolledStatEl.innerText = people.length;
         }
     } catch (e) {
         console.warn("People registry load error:", e);
