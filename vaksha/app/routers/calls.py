@@ -45,7 +45,15 @@ def remove_enrolled_person(person_code: str, db: Session = Depends(get_db)):
         try:
             from supabase import create_client
             sb = create_client(url, key)
-            sb.table("voiceprints").delete().eq("person_code", person_code).execute()
+            
+            # Fetch the person to get their Supabase ID
+            res_people = sb.table("people").select("id").eq("person_code", person_code).execute()
+            if res_people.data:
+                person_id = res_people.data[0]["id"]
+                # Delete from voiceprints using person_id
+                sb.table("voiceprints").delete().eq("person_id", person_id).execute()
+                
+            # Delete from people
             sb.table("people").delete().eq("person_code", person_code).execute()
             logger.info(f"Deleted {person_code} from Supabase")
         except Exception as e:

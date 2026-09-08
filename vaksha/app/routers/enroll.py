@@ -30,30 +30,41 @@ def _sync_to_supabase(person_code: str, name: str, role_title: str,
         raise Exception("Supabase URL or Key is missing/invalid in environment variables.")
 
     from supabase import create_client
+    import postgrest
+    
     sb = create_client(url, key)
 
-    # Upsert person row
-    person_row = {
-        "person_code": person_code,
-        "name": name,
-        "role_title": role_title,
-        "org": org,
-        "official_callback": official_callback,
-        "consent": "GRANTED",
-        "status": "ACTIVE",
-    }
-    res_people = sb.table("people").upsert(person_row, on_conflict="person_code").execute()
-    logger.info(f"Supabase people response: {res_people.data}")
+    try:
+        # Upsert person row
+        person_row = {
+            "name": name,
+            "role": role_title,
+            "person_code": person_code,
+            "role_title": role_title,
+            "official_callback": official_callback,
+            "org": org,
+            "consent": True
+        }
+        res_people = sb.table("people").upsert(person_row, on_conflict="person_code").execute()
 
-    # Insert voiceprint row
-    vp_row = {
-        "person_code": person_code,
-        "embedding_json": json.dumps(embedding),
-        "quality_score": 98.5,
-        "duration_sec": round(duration_sec, 2),
-    }
-    res_vp = sb.table("voiceprints").insert(vp_row).execute()
-    logger.info(f"Supabase voiceprints response: {res_vp.data}")
+        if not res_people.data:
+            raise Exception("Failed to upsert into people table: no data returned.")
+        
+        person_id = res_people.data[0]["id"]
+
+        # Insert voiceprint row
+        vp_row = {
+            "person_id": person_id,
+            "embedding": embedding
+        }
+        res_vp = sb.table("voiceprints").insert(vp_row).execute()
+        
+    except postgrest.exceptions.APIError as e:
+        # e.json() or str(e) contains the exact Supabase error message
+        err_msg = e.message if hasattr(e, 'message') else str(e)
+        raise Exception(f"Supabase Error: {err_msg}")
+    except Exception as e:
+        raise Exception(str(e))
 
 
 @router.post("/enroll")
