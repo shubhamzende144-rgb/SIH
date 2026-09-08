@@ -91,7 +91,7 @@
             <header class="topbar">
                 <div class="topbar-left">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" class="lock-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    <span class="workspace-path">Protected environment <span class="path-slash">/</span> <strong>Northstar Financial</strong></span>
+                    <span class="workspace-path">Protected environment <span class="path-slash">/</span> <strong>Union Bank Demo</strong></span>
                 </div>
 
                 <div class="topbar-right">
@@ -107,7 +107,7 @@
 
                     <div class="workspace-dropdown">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-                        <span>Northstar Financial</span>
+                        <span>Union Bank Demo</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
                     </div>
 
@@ -514,33 +514,51 @@
                     </div>
                 </div>
 
-                <!-- VIEW 4: TRUSTED VOICES -->
+                <!-- VIEW 4: TRUSTED VOICES (MATCHING SCREENSHOT 1) -->
                 <div id="tab-trusted" class="tab-panel">
-                    <div class="page-heading">
-                        <div class="eyebrow font-mono">TRUSTED SPEAKER REGISTRY</div>
-                        <h1>Trusted Voices</h1>
-                        <p>Manage enrolled executive voiceprints and speaker verification models.</p>
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow font-mono text-cyan">IDENTITY REGISTRY</div>
+                            <h1>Trusted Voices</h1>
+                            <p>Manage verified voice identities used for impersonation detection.</p>
+                        </div>
+                        <button class="btn-primary flex-align" onclick="openRegisterVoiceModal()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Register trusted voice
+                        </button>
                     </div>
 
-                    <div class="glass-card margin-top">
-                        <div class="card-header-clean">
-                            <h2>ENROLLED INDIVIDUALS REGISTRY</h2>
-                            <button class="btn-secondary btn-sm" onclick="loadTrustedPeople()">Refresh</button>
+                    <!-- Search & Filter Controls Row -->
+                    <div class="filter-controls-row margin-top">
+                        <div class="search-input-wrap">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="search-people-input" placeholder="Search employee, voice ID..." onkeyup="filterPeopleTable()">
                         </div>
+                        <div class="status-filter-wrap">
+                            <select id="filter-people-status" onchange="filterPeopleTable()" class="select-clean">
+                                <option value="ALL">All statuses</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="REVIEW">Review</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="glass-card margin-top-sm">
                         <div class="table-container">
                             <table class="soc-table">
                                 <thead>
                                     <tr>
-                                        <th>PERSON CODE</th>
-                                        <th>FULL NAME</th>
-                                        <th>ROLE TITLE</th>
-                                        <th>ORGANIZATION</th>
-                                        <th>OFFICIAL CALLBACK</th>
+                                        <th>EMPLOYEE</th>
+                                        <th>ROLE</th>
+                                        <th>VOICE ID</th>
+                                        <th>SAMPLES</th>
+                                        <th>VERIFICATION</th>
                                         <th>STATUS</th>
+                                        <th style="width: 40px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="trusted-people-body">
-                                    <tr><td colspan="6" class="text-center">Loading enrolled registry...</td></tr>
+                                    <tr><td colspan="7" class="text-center">Loading verified voice identities...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -756,6 +774,59 @@
             <span>Mock Mode: <strong id="footer-mock-status" class="mock-badge false">FALSE</strong></span>
         </div>
     </footer>
+
+    <!-- Modal: Register Trusted Voice -->
+    <div class="modal-overlay hidden" id="modal-register-voice">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <div class="eyebrow font-mono text-cyan">NEW ENROLLMENT</div>
+                    <h2>Register Trusted Voice Identity</h2>
+                </div>
+                <button class="modal-close" onclick="closeRegisterVoiceModal()">&times;</button>
+            </div>
+            
+            <form id="form-register-voice" onsubmit="submitVoiceEnrollment(event)" class="modal-body">
+                <div class="form-group margin-top-sm">
+                    <label class="form-label">Employee Full Name *</label>
+                    <input type="text" id="enroll-name" placeholder="e.g. Arjun Mehta" required class="input-clean">
+                </div>
+
+                <div class="form-row margin-top-sm">
+                    <div class="form-group half">
+                        <label class="form-label">Role Title *</label>
+                        <input type="text" id="enroll-role" placeholder="e.g. Chief Financial Officer" required class="input-clean">
+                    </div>
+                    <div class="form-group half">
+                        <label class="form-label">Voice ID / Person Code *</label>
+                        <input type="text" id="enroll-code" placeholder="e.g. VS-00182" required class="input-clean font-mono">
+                    </div>
+                </div>
+
+                <div class="form-group margin-top-sm">
+                    <label class="form-label">Official Callback Phone *</label>
+                    <input type="text" id="enroll-callback" placeholder="e.g. +91 98200 00001" required class="input-clean font-mono">
+                </div>
+
+                <div class="form-group margin-top-sm">
+                    <label class="form-label">Voice Audio Sample *</label>
+                    <div class="enroll-audio-box">
+                        <input type="file" id="enroll-audio-file" accept="audio/*" class="hidden-file-input" onchange="onEnrollFileSelected(this)">
+                        <div class="enroll-audio-options">
+                            <label for="enroll-audio-file" class="btn-secondary btn-sm">📁 Choose Audio File (WAV/MP3)</label>
+                            <button type="button" class="btn-secondary btn-sm btn-mic-record" id="btn-enroll-record" onclick="toggleEnrollRecord(event)">🎙 Record Mic Sample</button>
+                        </div>
+                        <div class="selected-audio-name font-mono margin-top-sm" id="enroll-selected-file-name">No file selected (Min 1 sec audio required)</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer margin-top">
+                    <button type="button" class="btn-secondary" onclick="closeRegisterVoiceModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="btn-submit-enroll">Submit & Enroll Voiceprint</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="/static/app.js"></script>
 </body>

@@ -43,20 +43,47 @@ def seed_database():
         # 2. Seed People
         people_data = [
             {
-                "person_code": "UB-CFO-0192",
-                "name": "Rahul Sharma",
+                "person_code": "VS-00182",
+                "name": "Arjun Mehta",
                 "role_title": "Chief Financial Officer",
-                "org": "Union Bank",
-                "official_callback": "+91 22 2262 1100",
+                "org": "Union Bank Demo",
+                "official_callback": "+91 98200 00182",
                 "consent": "GRANTED",
                 "status": "ACTIVE"
             },
             {
-                "person_code": "UB-BR-0441",
-                "name": "Meera Iyer",
-                "role_title": "Regional Branch Director",
-                "org": "Union Bank",
-                "official_callback": "+91 22 2262 4410",
+                "person_code": "VS-00147",
+                "name": "Sarah Lin",
+                "role_title": "Chief Executive Officer",
+                "org": "Union Bank Demo",
+                "official_callback": "+91 98200 00147",
+                "consent": "GRANTED",
+                "status": "ACTIVE"
+            },
+            {
+                "person_code": "VS-00209",
+                "name": "Marcus Reed",
+                "role_title": "VP, Treasury Operations",
+                "org": "Union Bank Demo",
+                "official_callback": "+91 98200 00209",
+                "consent": "GRANTED",
+                "status": "ACTIVE"
+            },
+            {
+                "person_code": "VS-00094",
+                "name": "Julia Park",
+                "role_title": "Head of Customer Trust",
+                "org": "Union Bank Demo",
+                "official_callback": "+91 98200 00094",
+                "consent": "GRANTED",
+                "status": "REVIEW"
+            },
+            {
+                "person_code": "UB-CFO-0192",
+                "name": "Rahul Sharma",
+                "role_title": "Chief Financial Officer",
+                "org": "Union Bank Demo",
+                "official_callback": "+91 22 2262 1100",
                 "consent": "GRANTED",
                 "status": "ACTIVE"
             }

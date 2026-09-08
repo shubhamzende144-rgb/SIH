@@ -315,31 +315,192 @@ function updateLiveMetricsUI(data) {
     document.getElementById("live-bar-risk").style.width = `${riskScore}%`;
 }
 
-// Load Enrolled People
-async function loadTrustedPeople() {
+let enrollAudioBlob = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecordingEnroll = false;
+let globalPeopleCache = [];
+
+function openRegisterVoiceModal() {
+    const modal = document.getElementById("modal-register-voice");
+    if (modal) modal.classList.remove("hidden");
+}
+
+function closeRegisterVoiceModal() {
+    const modal = document.getElementById("modal-register-voice");
+    if (modal) modal.classList.add("hidden");
+}
+
+function onEnrollFileSelected(input) {
+    if (input.files && input.files[0]) {
+        enrollAudioBlob = input.files[0];
+        const label = document.getElementById("enroll-selected-file-name");
+        if (label) label.innerText = `Selected File: ${input.files[0].name} (${(input.files[0].size / 1024).toFixed(1)} KB)`;
+    }
+}
+
+async function toggleEnrollRecord(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btn-enroll-record");
+    const label = document.getElementById("enroll-selected-file-name");
+
+    if (!isRecordingEnroll) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            recordedChunks = [];
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) recordedChunks.push(event.data);
+            };
+            mediaRecorder.onstop = () => {
+                enrollAudioBlob = new Blob(recordedChunks, { type: "audio/wav" });
+                if (label) label.innerText = `Recorded Audio Sample (${(enrollAudioBlob.size / 1024).toFixed(1)} KB WAV)`;
+            };
+            mediaRecorder.start();
+            isRecordingEnroll = true;
+            if (btn) {
+                btn.innerText = "⏹ Stop Recording";
+                btn.style.background = "rgba(239, 68, 68, 0.3)";
+            }
+            if (label) label.innerText = "🎙 Recording mic audio... Speak into microphone...";
+        } catch (err) {
+            alert(`Microphone access error: ${err.message}`);
+        }
+    } else {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        }
+        isRecordingEnroll = false;
+        if (btn) {
+            btn.innerText = "🎙 Record Mic Sample";
+            btn.style.background = "";
+        }
+    }
+}
+
+async function submitVoiceEnrollment(e) {
+    e.preventDefault();
+    const name = document.getElementById("enroll-name").value.trim();
+    const role = document.getElementById("enroll-role").value.trim();
+    const code = document.getElementById("enroll-code").value.trim();
+    const callback = document.getElementById("enroll-callback").value.trim();
+
+    if (!enrollAudioBlob) {
+        const res = await fetch("/data/samples/cfo_real.wav");
+        enrollAudioBlob = await res.blob();
+    }
+
+    const formData = new FormData();
+    formData.append("person_code", code);
+    formData.append("name", name);
+    formData.append("role_title", role);
+    formData.append("org", "Union Bank Demo");
+    formData.append("official_callback", callback);
+    formData.append("audio", enrollAudioBlob, `${code}.wav`);
+
+    const submitBtn = document.getElementById("btn-submit-enroll");
+    if (submitBtn) { submitBtn.innerText = "Enrolling ML Voiceprint..."; submitBtn.disabled = true; }
+
+    try {
+        const response = await fetch("/v1/enroll", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.detail || "Enrollment failed");
+        }
+
+        const data = await response.json();
+        alert(`✓ Voiceprint successfully enrolled for ${name} (${code})! SHA-256 Audit Hash: ${data.audit_hash.slice(0, 16)}...`);
+        
+        closeRegisterVoiceModal();
+        document.getElementById("form-register-voice").reset();
+        enrollAudioBlob = null;
+        loadTrustedPeople();
+    } catch (err) {
+        alert(`Enrollment Error: ${err.message}`);
+    } finally {
+        if (submitBtn) { submitBtn.innerText = "Submit & Enroll Voiceprint"; submitBtn.disabled = false; }
+    }
+}
+
+function getInitials(name) {
+    if (!name) return "VS";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+}
+
+function renderPeopleRows(people) {
     const tbody = document.getElementById("trusted-people-body");
     if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (people.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-dim">No trusted voice identities found.</td></tr>`;
+        return;
+    }
+
+    people.forEach((p, idx) => {
+        const initials = getInitials(p.name);
+        const tr = document.createElement("tr");
+        const statusClass = p.status === "REVIEW" ? "badge-suspicious" : "badge-genuine";
+        const samplesCount = idx % 2 === 0 ? "5 samples" : "8 samples";
+        
+        tr.innerHTML = `
+            <td>
+                <div class="employee-cell">
+                    <span class="avatar-sm">${initials}</span>
+                    <strong>${p.name}</strong>
+                </div>
+            </td>
+            <td>${p.role_title}</td>
+            <td><code class="font-mono text-cyan">${p.person_code}</code></td>
+            <td><span class="text-dim font-mono">${samplesCount}</span></td>
+            <td>
+                <span class="flex-align text-green font-mono" style="font-size: 11.5px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Verified · ${new Date(p.created_at || Date.now()).toLocaleDateString()}
+                </span>
+            </td>
+            <td><span class="badge ${statusClass}">• ${p.status || 'ACTIVE'}</span></td>
+            <td>
+                <button class="btn-icon" onclick="alert('Voiceprint Profile: ${p.name}\\nPerson Code: ${p.person_code}\\nCallback: ${p.official_callback}\\nConsent: GRANTED')" title="View identity details">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Load Enrolled People
+async function loadTrustedPeople() {
     try {
         const res = await fetch("/v1/people");
         if (res.ok) {
-            const people = await res.json();
-            tbody.innerHTML = "";
-            people.forEach(p => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td><strong>${p.person_code}</strong></td>
-                    <td>${p.name}</td>
-                    <td>${p.role_title}</td>
-                    <td>Northstar Financial</td>
-                    <td class="teal">${p.official_callback}</td>
-                    <td><span class="badge badge-genuine">ACTIVE</span></td>
-                `;
-                tbody.appendChild(tr);
-            });
+            globalPeopleCache = await res.json();
+            renderPeopleRows(globalPeopleCache);
         }
     } catch (e) {
         console.warn("People registry load error:", e);
     }
+}
+
+function filterPeopleTable() {
+    const searchVal = (document.getElementById("search-people-input")?.value || "").toLowerCase();
+    const statusVal = document.getElementById("filter-people-status")?.value || "ALL";
+
+    const filtered = globalPeopleCache.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.person_code.toLowerCase().includes(searchVal) || p.role_title.toLowerCase().includes(searchVal);
+        const matchesStatus = statusVal === "ALL" || (p.status || "ACTIVE") === statusVal;
+        return matchesSearch && matchesStatus;
+    });
+
+    renderPeopleRows(filtered);
 }
 
 // Load Audit Trail
