@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceShield · Voice Intelligence</title>
+    <title>VoiceShield · Voice Intelligence & Security</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,15 +13,16 @@
     <div class="satya-app" data-testid="voiceshield-app">
         <!-- Sidebar Navigation -->
         <aside class="satya-sidebar" data-testid="voiceshield-sidebar">
-            <div class="brand-lockup">
+            <div class="brand-lockup" onclick="switchTab('tab-overview')">
                 <div class="brand-mark">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         <path d="M9 12l2 2 4-4"></path>
                     </svg>
+                    <span class="brand-mark-dot"></span>
                 </div>
                 <div>
-                    <div class="brand-name">Voice<span>Shield</span></div>
+                    <div class="brand-name">VoiceShield</div>
                     <div class="brand-caption">VOICE INTELLIGENCE</div>
                 </div>
             </div>
@@ -30,36 +31,36 @@
 
             <nav class="sidebar-nav" aria-label="Primary navigation">
                 <button class="sidebar-nav-item is-active" data-tab="tab-overview" onclick="switchTab('tab-overview')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
                     <span>Overview</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-analyze" onclick="switchTab('tab-analyze')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
                     <span>Analyze Voice</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-live" onclick="switchTab('tab-live')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path><circle cx="12" cy="12" r="2"></circle><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path><path d="M19.1 4.9c3.9 3.9 3.9 10.2 0 14.1"></path></svg>
                     <span>Live Detection</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-trusted" onclick="switchTab('tab-trusted')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <span>Trusted Voices</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-history" onclick="switchTab('tab-history')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     <span>Detection History</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-alerts" onclick="switchTab('tab-alerts')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                     <span>Alerts</span>
                     <span class="nav-alert-badge">3</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-reports" onclick="switchTab('tab-reports')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                     <span>Reports</span>
                 </button>
                 <button class="sidebar-nav-item" data-tab="tab-settings" onclick="switchTab('tab-settings')">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     <span>Settings</span>
                 </button>
             </nav>
@@ -80,7 +81,7 @@
                     <strong>Security Admin</strong>
                     <span>Enterprise workspace</span>
                 </span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-more-icon"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="user-more-icon"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
             </div>
         </aside>
 
@@ -89,8 +90,8 @@
             <!-- Topbar Header -->
             <header class="topbar">
                 <div class="topbar-left">
-                    <span class="lock-icon">🔒</span>
-                    <span class="workspace-path">Protected environment / <strong>Northstar Financial</strong></span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" class="lock-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span class="workspace-path">Protected environment <span class="path-slash">/</span> <strong>Northstar Financial</strong></span>
                 </div>
 
                 <div class="topbar-right">
@@ -100,12 +101,12 @@
                     </div>
 
                     <div class="notification-trigger" id="notif-trigger" onclick="toggleNotifications()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                         <span class="notif-dot"></span>
                     </div>
 
                     <div class="workspace-dropdown">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
                         <span>Northstar Financial</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
                     </div>
@@ -117,7 +118,7 @@
                 <div class="notif-dropdown-card hidden" id="notif-dropdown">
                     <div class="notif-header">
                         <strong>Notifications</strong>
-                        <span class="notif-unread">3 unread</span>
+                        <span class="notif-unread font-mono">3 unread</span>
                     </div>
                     <div class="notif-item">
                         <span class="bullet red"></span>
@@ -136,58 +137,66 @@
 
             <main class="satya-content">
 
-                <!-- VIEW 1: OVERVIEW SCREEN (MATCHING SCREENSHOT 1, 2, 3) -->
+                <!-- VIEW 1: OVERVIEW SCREEN (SCREENSHOT 1, 2, 3) -->
                 <div id="tab-overview" class="tab-panel active">
                     <div class="page-heading">
-                        <div class="eyebrow">SECURITY COMMAND CENTER</div>
+                        <div class="eyebrow font-mono">SECURITY COMMAND CENTER</div>
                         <h1>Voice Security Overview</h1>
                         <p>Monitor voice authenticity and impersonation threats across your organization.</p>
                     </div>
 
-                    <div class="info-banner-blue">
+                    <div class="info-banner-blue margin-top">
                         <div class="info-banner-left">
                             <span class="info-icon">ⓘ</span>
                             <span><strong>DEMO MODE</strong> — Showing representative security telemetry. Audio analysis is simulated for this workspace.</span>
                         </div>
-                        <span class="engine-tag">ENGINE v3.8.1</span>
+                        <span class="engine-tag font-mono">ENGINE v3.8.1</span>
                     </div>
 
-                    <!-- 4 Stat Cards -->
+                    <!-- 4 Stat Cards Row -->
                     <div class="stat-cards-grid margin-top">
                         <div class="stat-card">
                             <div class="stat-header">
                                 <span>Voices Analyzed</span>
-                                <div class="stat-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></div>
+                                <div class="stat-icon blue">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                                </div>
                             </div>
-                            <div class="stat-value" id="ov-val-analyzed">12,846</div>
-                            <div class="stat-sub font-mono">Compared with last month <span class="trend-up">↗ 12.4%</span></div>
+                            <div class="stat-value font-mono" id="ov-val-analyzed">12,846</div>
+                            <div class="stat-sub">Compared with last month <span class="trend-up">↗ 12.4%</span></div>
                         </div>
 
                         <div class="stat-card">
                             <div class="stat-header">
                                 <span>AI Voices Detected</span>
-                                <div class="stat-icon red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+                                <div class="stat-icon red">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                </div>
                             </div>
-                            <div class="stat-value" id="ov-val-ai">1,284</div>
-                            <div class="stat-sub font-mono">10.0% detection rate</div>
+                            <div class="stat-value font-mono" id="ov-val-ai">1,284</div>
+                            <div class="stat-sub">10.0% detection rate</div>
                         </div>
 
                         <div class="stat-card">
                             <div class="stat-header">
                                 <span>High-Risk Attempts</span>
-                                <div class="stat-icon yellow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg></div>
+                                <div class="stat-icon yellow">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+                                </div>
                             </div>
-                            <div class="stat-value" id="ov-val-risk">37</div>
-                            <div class="stat-sub font-mono">Requires analyst review <span class="trend-up">↗ 8 this week</span></div>
+                            <div class="stat-value font-mono" id="ov-val-risk">37</div>
+                            <div class="stat-sub">Requires analyst review <span class="trend-up">↗ 8 this week</span></div>
                         </div>
 
                         <div class="stat-card">
                             <div class="stat-header">
                                 <span>Detection Accuracy</span>
-                                <div class="stat-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                                <div class="stat-icon green">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </div>
                             </div>
-                            <div class="stat-value">98.7%</div>
-                            <div class="stat-sub font-mono">Across 31,204 analyses</div>
+                            <div class="stat-value font-mono">98.7%</div>
+                            <div class="stat-sub">Across 31,204 analyses</div>
                         </div>
                     </div>
 
@@ -209,14 +218,14 @@
                             <!-- Bar Chart Visualizer -->
                             <div class="chart-container">
                                 <div class="bar-chart">
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:64%"></span><span class="b-red" style="height:25%"></span><span class="b-yellow" style="height:12%"></span></div><span class="time-label">06:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:78%"></span><span class="b-red" style="height:28%"></span><span class="b-yellow" style="height:18%"></span></div><span class="time-label">07:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:86%"></span><span class="b-red" style="height:32%"></span><span class="b-yellow" style="height:24%"></span></div><span class="time-label">08:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:96%"></span><span class="b-red" style="height:44%"></span><span class="b-yellow" style="height:30%"></span></div><span class="time-label">09:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:88%"></span><span class="b-red" style="height:36%"></span><span class="b-yellow" style="height:20%"></span></div><span class="time-label">10:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:110%"></span><span class="b-red" style="height:52%"></span><span class="b-yellow" style="height:35%"></span></div><span class="time-label">11:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:104%"></span><span class="b-red" style="height:60%"></span><span class="b-yellow" style="height:40%"></span></div><span class="time-label">12:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:124%"></span><span class="b-red" style="height:56%"></span><span class="b-yellow" style="height:32%"></span></div><span class="time-label">13:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:64%"></span><span class="b-red" style="height:25%"></span><span class="b-yellow" style="height:12%"></span></div><span class="time-label font-mono">06:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:78%"></span><span class="b-red" style="height:28%"></span><span class="b-yellow" style="height:18%"></span></div><span class="time-label font-mono">07:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:86%"></span><span class="b-red" style="height:32%"></span><span class="b-yellow" style="height:24%"></span></div><span class="time-label font-mono">08:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:96%"></span><span class="b-red" style="height:44%"></span><span class="b-yellow" style="height:30%"></span></div><span class="time-label font-mono">09:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:88%"></span><span class="b-red" style="height:36%"></span><span class="b-yellow" style="height:20%"></span></div><span class="time-label font-mono">10:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:110%"></span><span class="b-red" style="height:52%"></span><span class="b-yellow" style="height:35%"></span></div><span class="time-label font-mono">11:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:104%"></span><span class="b-red" style="height:60%"></span><span class="b-yellow" style="height:40%"></span></div><span class="time-label font-mono">12:00</span></div>
+                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:124%"></span><span class="b-red" style="height:56%"></span><span class="b-yellow" style="height:32%"></span></div><span class="time-label font-mono">13:00</span></div>
                                 </div>
                                 <div class="chart-footer-row">
                                     <span>Telemetry window · Last 8 hours</span>
@@ -249,19 +258,19 @@
 
                             <div class="engine-status-list">
                                 <div class="engine-item">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rx></svg> Voice Detection Engine</span>
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect></svg> Voice Detection Engine</span>
                                     <span class="online-tag"><span class="dot green"></span> Online</span>
                                 </div>
                                 <div class="engine-item">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg> Audio Analysis</span>
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4"></path></svg> Audio Analysis</span>
                                     <span class="online-tag"><span class="dot green"></span> Online</span>
                                 </div>
                                 <div class="engine-item">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg> Threat Intelligence</span>
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg> Threat Intelligence</span>
                                     <span class="online-tag"><span class="dot green"></span> Online</span>
                                 </div>
                                 <div class="engine-item">
-                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg> API Status</span>
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg> API Status</span>
                                     <span class="online-tag"><span class="dot green"></span> Online</span>
                                 </div>
                             </div>
@@ -297,7 +306,7 @@
                                         <td><strong>CFO Voice</strong> <span class="voice-id font-mono">#V-2041</span></td>
                                         <td>Synthetic Voice Analysis</td>
                                         <td><span class="score-dot red"></span> <strong class="text-red font-mono">92</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-highrisk">HIGH RISK</span></td>
+                                        <td><span class="badge badge-highrisk"><span class="dot red"></span> HIGH RISK</span></td>
                                         <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Review</button></td>
                                     </tr>
                                     <tr>
@@ -305,7 +314,7 @@
                                         <td><strong>Employee</strong> <span class="voice-id font-mono">#E-184</span></td>
                                         <td>Voice Authentication</td>
                                         <td><span class="score-dot green"></span> <strong class="text-green font-mono">8</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-genuine">GENUINE</span></td>
+                                        <td><span class="badge badge-genuine"><span class="dot green"></span> GENUINE</span></td>
                                         <td><span class="action-link green">Verified</span></td>
                                     </tr>
                                     <tr>
@@ -313,7 +322,7 @@
                                         <td><strong>Unknown Caller</strong> <span class="voice-id font-mono">#V-9912</span></td>
                                         <td>Voice Clone Analysis</td>
                                         <td><span class="score-dot yellow"></span> <strong class="text-yellow font-mono">76</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-suspicious">SUSPICIOUS</span></td>
+                                        <td><span class="badge badge-suspicious"><span class="dot yellow"></span> SUSPICIOUS</span></td>
                                         <td><button class="action-link blue" onclick="switchTab('tab-analyze')">Investigate</button></td>
                                     </tr>
                                     <tr>
@@ -321,7 +330,7 @@
                                         <td><strong>Finance Ops</strong> <span class="voice-id font-mono">#E-1175</span></td>
                                         <td>Transaction Verification</td>
                                         <td><span class="score-dot green"></span> <strong class="text-green font-mono">18</strong> <span class="text-dim font-mono">/100</span></td>
-                                        <td><span class="badge badge-genuine">GENUINE</span></td>
+                                        <td><span class="badge badge-genuine"><span class="dot green"></span> GENUINE</span></td>
                                         <td><span class="action-link green">Verified</span></td>
                                     </tr>
                                 </tbody>
@@ -330,12 +339,18 @@
                     </div>
                 </div>
 
-                <!-- VIEW 2: ANALYZE VOICE SCREEN (MATCHING SCREENSHOT 4) -->
+                <!-- VIEW 2: ANALYZE VOICE SCREEN (SCREENSHOT 4) -->
                 <div id="tab-analyze" class="tab-panel">
-                    <div class="page-heading">
-                        <div class="eyebrow">FORENSIC VOICE ANALYSIS</div>
-                        <h1>Analyze Voice</h1>
-                        <p>Upload an audio recording or record a voice sample for authenticity analysis.</p>
+                    <div class="page-heading-row">
+                        <div>
+                            <div class="eyebrow font-mono">FORENSIC VOICE ANALYSIS</div>
+                            <h1>Analyze Voice</h1>
+                            <p>Upload an audio recording or record a voice sample for authenticity analysis.</p>
+                        </div>
+                        <button class="view-history-link" onclick="switchTab('tab-history')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>View analysis history</span>
+                        </button>
                     </div>
 
                     <div class="analyze-grid margin-top">
@@ -388,7 +403,7 @@
                         <div class="glass-card guidance-card">
                             <div class="card-header-clean">
                                 <div class="guidance-title">
-                                    <span class="info-blue-icon">ⓘ</span>
+                                    <div class="info-blue-circle">ⓘ</div>
                                     <div>
                                         <h2>For best results</h2>
                                         <p class="sub-text">Analysis guidance</p>
@@ -435,11 +450,11 @@
                     </div>
                 </div>
 
-                <!-- VIEW 3: LIVE DETECTION SCREEN (MATCHING SCREENSHOT 5) -->
+                <!-- VIEW 3: LIVE DETECTION SCREEN (SCREENSHOT 5) -->
                 <div id="tab-live" class="tab-panel">
                     <div class="page-heading-row">
                         <div>
-                            <div class="eyebrow">CONTINUOUS MONITORING</div>
+                            <div class="eyebrow font-mono">CONTINUOUS MONITORING</div>
                             <h1>Live Voice Detection</h1>
                             <p>Monitor an active voice session with continuously updating authenticity signals.</p>
                         </div>
@@ -502,7 +517,7 @@
                 <!-- VIEW 4: TRUSTED VOICES -->
                 <div id="tab-trusted" class="tab-panel">
                     <div class="page-heading">
-                        <div class="eyebrow">TRUSTED SPEAKER REGISTRY</div>
+                        <div class="eyebrow font-mono">TRUSTED SPEAKER REGISTRY</div>
                         <h1>Trusted Voices</h1>
                         <p>Manage enrolled executive voiceprints and speaker verification models.</p>
                     </div>
@@ -535,7 +550,7 @@
                 <!-- VIEW 5: DETECTION HISTORY -->
                 <div id="tab-history" class="tab-panel">
                     <div class="page-heading">
-                        <div class="eyebrow">CRYPTOGRAPHIC AUDIT LEDGER</div>
+                        <div class="eyebrow font-mono">CRYPTOGRAPHIC AUDIT LEDGER</div>
                         <h1>Detection History</h1>
                         <p>Immutable record of all voice evaluations signed with SHA-256 hashes.</p>
                     </div>
