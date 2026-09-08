@@ -8,36 +8,30 @@ from app.services.audio import save_temp_wav
 
 logger = logging.getLogger("vaksha.speaker")
 
-# Check network connectivity at module load time to avoid 30s HF hub retry delays when offline
-try:
-    import socket
-    socket.create_connection(("1.1.1.1", 53), timeout=0.5)
-except Exception:
-    os.environ["HF_HUB_OFFLINE"] = "1"
-    os.environ["TRANSFORMERS_OFFLINE"] = "1"
-
 _spk_classifier = None
 _speaker_model_loaded = False
 
 def init_speaker_engine():
     global _spk_classifier, _speaker_model_loaded
     if settings.MOCK_ENGINES:
-        logger.info("MOCK_ENGINES=1 enabled in config. Using MFCC acoustic embedding speaker engine.")
+        logger.info("MOCK_ENGINES=1 enabled in config.")
         _speaker_model_loaded = False
         return
 
     try:
         from speechbrain.inference.speaker import EncoderClassifier
         logger.info("Initializing Engine B model: speechbrain/spkrec-ecapa-voxceleb")
+        save_dir = os.path.expanduser("~/.cache/speechbrain/spkrec-ecapa-voxceleb")
         _spk_classifier = EncoderClassifier.from_hparams(
             source="speechbrain/spkrec-ecapa-voxceleb",
-            savedir=os.path.expanduser("~/.cache/speechbrain/spkrec-ecapa-voxceleb")
+            savedir=save_dir
         )
         _speaker_model_loaded = True
         logger.info("Engine B (ECAPA-TDNN Speaker Recognition) loaded successfully.")
     except Exception as e:
-        logger.warning(f"Engine B SpeechBrain load skipped/deferred ({e}). Using MFCC acoustic embedding engine.")
+        logger.error(f"Engine B SpeechBrain load failed ({e}).")
         _speaker_model_loaded = False
+        _spk_classifier = None
 
 def extract_embedding(y: np.ndarray, sr: int = 16000) -> list[float]:
     """

@@ -13,7 +13,7 @@ _model_loaded = False
 def init_ai_detector():
     global _ai_detector_pipe, _model_loaded
     if settings.MOCK_ENGINES:
-        logger.info("MOCK_ENGINES=1 enabled in config. Using acoustic signal analyzer.")
+        logger.info("MOCK_ENGINES=1 enabled in config.")
         _model_loaded = False
         return
 
@@ -23,29 +23,29 @@ def init_ai_detector():
         logger.info(f"Initializing Engine A model: {model_name}")
         token = settings.HF_TOKEN if settings.HF_TOKEN else None
         
-        # Load local files if available or attempt fast pipeline init
-        _ai_detector_pipe = pipeline("audio-classification", model=model_name, token=token, local_files_only=True)
+        try:
+            _ai_detector_pipe = pipeline("audio-classification", model=model_name, token=token, local_files_only=True)
+        except Exception:
+            _ai_detector_pipe = pipeline("audio-classification", model=model_name, token=token)
+
         _model_loaded = True
         logger.info("Engine A (Wav2Vec2 Deepfake Detector) loaded successfully.")
     except Exception as e:
-        logger.warning(f"Engine A Hugging Face network check skipped ({e}). Running acoustic spectral analyzer.")
+        logger.error(f"Engine A Hugging Face model load failed ({e}).")
         _model_loaded = False
+        _ai_detector_pipe = None
 
 def predict_ai_fake(y: np.ndarray, sr: int = 16000) -> float:
     """
     Evaluates raw audio PCM signal y and returns AI Fake Score (0.0 to 100.0).
-    Uses Hugging Face Wav2Vec2 classifier if loaded, or real-time acoustic spectral analysis.
+    Uses Hugging Face Wav2Vec2 classifier (garystafford/wav2vec2-deepfake-voice-detector).
     NO filename checks are performed.
     """
     global _ai_detector_pipe, _model_loaded
     
     if _model_loaded and _ai_detector_pipe is not None:
         try:
-            tmp_wav = save_temp_wav(y, sr)
-            results = _ai_detector_pipe(tmp_wav)
-            if os.path.exists(tmp_wav):
-                os.remove(tmp_wav)
-                
+            results = _ai_detector_pipe({"raw": y, "sampling_rate": sr})
             fake_score = 0.0
             for item in results:
                 label = item.get("label", "").lower()

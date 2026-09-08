@@ -810,3 +810,16 @@ canvas#waveform-canvas { width: 100%; height: 120px; }
 
 .hidden { display: none !important; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Alert Cards & Utilities */
+.border-red { border-left: 3px solid var(--accent-red) !important; }
+.border-yellow { border-left: 3px solid var(--accent-yellow) !important; }
+.border-blue { border-left: 3px solid var(--accent-blue) !important; }
+.alert-header { display: flex; justify-content: space-between; align-items: center; }
+.alert-title-row { display: flex; align-items: center; gap: 10px; }
+.alert-title-row h3 { font-size: 14px; font-weight: 600; color: #ffffff; }
+.alert-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.alert-meta-row { font-size: 11.5px; color: var(--text-dim); }
+.alert-actions-row { display: flex; gap: 10px; }
+.margin-top-sm { margin-top: 8px; }
+.margin-left { margin-left: 16px; }

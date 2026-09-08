@@ -10,9 +10,11 @@ from fastapi.responses import FileResponse, JSONResponse
 from app.config import settings
 from app.db import engine, Base
 from app.routers import enroll, detect, calls, audit
+from app.services import detector_ai, speaker
 from app.services.detector_ai import init_ai_detector, predict_ai_fake
 from app.services.speaker import init_speaker_engine
 from app.services.fusion import fuse_risk_and_decision
+from fastapi import HTTPException
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("vaksha.main")
@@ -46,20 +48,29 @@ def startup_event():
     logger.info("Initializing Vaksha ML Engines...")
     init_ai_detector()
     init_speaker_engine()
-    logger.info("Vaksha Application ready.")
+    logger.info(f"Vaksha Application ready. ML Models: Engine A={detector_ai._model_loaded}, Engine B={speaker._speaker_model_loaded}")
 
 @app.get("/health")
 def health_check():
     """
     Health check endpoint reporting ML engine status.
+    Returns {"mock": false, "ai": true, "speaker": true}. If models fail when mock is false, returns 503.
     """
+    ai_status = detector_ai._model_loaded
+    speaker_status = speaker._speaker_model_loaded
+    mock_status = settings.MOCK_ENGINES
+    
+    if not mock_status:
+        if not ai_status or not speaker_status:
+            raise HTTPException(
+                status_code=503,
+                detail=f"ML Engine Failure: Engine A (ai)={ai_status}, Engine B (speaker)={speaker_status}"
+            )
+            
     return {
-        "status": "ok",
-        "engines": {
-            "ai": True,
-            "speaker": True,
-            "mock": settings.MOCK_ENGINES
-        }
+        "mock": mock_status,
+        "ai": ai_status,
+        "speaker": speaker_status
     }
 
 # Live Streaming WebSocket Endpoint

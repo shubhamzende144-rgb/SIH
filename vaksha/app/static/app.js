@@ -16,18 +16,27 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAuditTrail();
 });
 
-// Check System Health & Update Footer Status
+// Check System Health & Update Footer Status & Demo Banner
 async function checkHealthStatus() {
     try {
         const res = await fetch("/health");
+        const demoBanner = document.getElementById("demo-mode-banner");
+        const mockStatusEl = document.getElementById("footer-mock-status");
+
         if (res.ok) {
             const data = await res.json();
-            const mockStatusEl = document.getElementById("footer-mock-status");
-            if (mockStatusEl && data.engines) {
-                const isMock = data.engines.mock;
+            const isMock = data.mock !== undefined ? data.mock : (data.engines ? data.engines.mock : true);
+            
+            if (mockStatusEl) {
                 mockStatusEl.innerText = isMock ? "TRUE" : "FALSE";
                 mockStatusEl.className = `mock-badge ${isMock ? 'true' : 'false'}`;
             }
+
+            if (demoBanner) {
+                demoBanner.style.display = isMock ? "flex" : "none";
+            }
+        } else {
+            if (demoBanner) demoBanner.style.display = "none";
         }
     } catch (err) {
         console.warn("Could not fetch /health status:", err);

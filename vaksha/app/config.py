@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./data/vaksha.db")
     MOCK_ENGINES: bool = os.getenv("MOCK_ENGINES", "0") in ("1", "true", "True")
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     
     class Config:
         env_file = ".env"
