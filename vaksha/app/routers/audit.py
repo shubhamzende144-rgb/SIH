@@ -6,7 +6,9 @@ from app.db import get_db
 from app.models import AuditLog
 from app.schemas import AuditLogSchema
 
-router = APIRouter(prefix="/v1", tags=["Audit Log"])
+from app.routers.auth import get_current_user
+
+router = APIRouter(prefix="/v1", tags=["Audit Log"], dependencies=[Depends(get_current_user)])
 
 @router.get("/audit", response_model=List[AuditLogSchema])
 def get_audit_trail(db: Session = Depends(get_db)):

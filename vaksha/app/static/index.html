@@ -10,7 +10,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="satya-app" data-testid="voiceshield-app">
+    <!-- Admin Login Overlay -->
+    <div id="login-overlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0f19; z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: #111827; padding: 40px; border-radius: 12px; border: 1px solid #1e293b; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
+                <div class="logo-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <span style="font-size: 20px; font-weight: 600; color: #fff;">VoiceShield</span>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label style="color: #94a3b8; font-size: 13px;">Admin Email</label>
+                    <input type="email" id="login-email" class="input-field" style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px; margin-top: 5px; box-sizing: border-box;" required placeholder="admin@vaksha.local">
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="color: #94a3b8; font-size: 13px;">Password</label>
+                    <input type="password" id="login-password" class="input-field" style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px; margin-top: 5px; box-sizing: border-box;" required placeholder="••••••••">
+                </div>
+                <div id="login-error" style="color: #ef4444; font-size: 13px; margin-top: 15px; display: none;"></div>
+                <button type="submit" id="btn-login-submit" style="width: 100%; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-weight: 600; margin-top: 25px; cursor: pointer; transition: background 0.2s;">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="satya-app" id="main-app" data-testid="voiceshield-app" style="display: none;">
         <!-- Sidebar Navigation -->
         <aside class="satya-sidebar" data-testid="voiceshield-sidebar">
             <div class="brand-lockup" onclick="switchTab('tab-overview')">
@@ -74,6 +98,11 @@
                     <span>Last checked less than a minute ago</span>
                 </div>
             </div>
+
+            <button onclick="handleLogout()" style="margin: 15px 20px; padding: 10px; background: transparent; border: 1px solid #334155; color: #94a3b8; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Sign Out
+            </button>
 
             <div class="sidebar-user">
                 <span class="avatar">SA</span>
@@ -216,20 +245,13 @@
                             </div>
 
                             <!-- Bar Chart Visualizer -->
-                            <div class="chart-container">
-                                <div class="bar-chart">
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:64%"></span><span class="b-red" style="height:25%"></span><span class="b-yellow" style="height:12%"></span></div><span class="time-label font-mono">06:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:78%"></span><span class="b-red" style="height:28%"></span><span class="b-yellow" style="height:18%"></span></div><span class="time-label font-mono">07:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:86%"></span><span class="b-red" style="height:32%"></span><span class="b-yellow" style="height:24%"></span></div><span class="time-label font-mono">08:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:96%"></span><span class="b-red" style="height:44%"></span><span class="b-yellow" style="height:30%"></span></div><span class="time-label font-mono">09:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:88%"></span><span class="b-red" style="height:36%"></span><span class="b-yellow" style="height:20%"></span></div><span class="time-label font-mono">10:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:110%"></span><span class="b-red" style="height:52%"></span><span class="b-yellow" style="height:35%"></span></div><span class="time-label font-mono">11:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:104%"></span><span class="b-red" style="height:60%"></span><span class="b-yellow" style="height:40%"></span></div><span class="time-label font-mono">12:00</span></div>
-                                    <div class="chart-col"><div class="bars"><span class="b-green" style="height:124%"></span><span class="b-red" style="height:56%"></span><span class="b-yellow" style="height:32%"></span></div><span class="time-label font-mono">13:00</span></div>
+                            <div class="chart-container" id="overview-chart-container">
+                                <div class="bar-chart" id="overview-bar-chart">
+                                    <!-- Populated via JS -->
                                 </div>
                                 <div class="chart-footer-row">
-                                    <span>Telemetry window · Last 8 hours</span>
-                                    <span>2,482 events</span>
+                                    <span>Telemetry window · All Time</span>
+                                    <span id="overview-chart-total-events">0 events</span>
                                 </div>
                             </div>
                         </div>
@@ -418,7 +440,7 @@
                                 </div>
                             </div>
 
-                            <div class="demo-engine-box margin-top">
+                            <div class="demo-engine-box margin-top" id="demo-engine-box">
                                 <strong>DEMO ANALYSIS ENGINE</strong>
                                 <p>This workspace returns a representative forensic result for demonstration. No audio is sent to a third-party service.</p>
                             </div>
@@ -434,7 +456,9 @@
                             <h1>Live Voice Detection</h1>
                             <p>Monitor an active voice session with continuously updating authenticity signals.</p>
                         </div>
-                        <span class="listening-badge-red"><span class="dot red"></span> LISTENING</span>
+                        <button class="listening-badge-red" id="live-mic-btn" style="cursor: pointer; border: none; font-family: inherit; font-size: 13px;" onclick="toggleLiveMic()">
+                            <span class="dot" id="live-mic-dot" style="background-color: #64748b;"></span> <span id="live-mic-text">START LIVE MIC</span>
+                        </button>
                     </div>
 
                     <!-- SIH Jury Test Controls Bar -->
@@ -453,8 +477,9 @@
                     <div class="glass-card margin-top live-card">
                         <div class="live-card-top">
                             <div class="listening-info">
-                                <span class="listening-pill"><span class="dot red"></span> LISTENING</span>
-                                <span class="session-sub">Inbound session · Channel 04 · 00:02:48</span>
+                                <span class="listening-pill" id="live-listening-pill" style="display:none;"><span class="dot red"></span> LISTENING</span>
+                                <span class="badge" id="live-decision-badge" style="display:none;"></span>
+                                <span class="session-sub" id="live-session-sub">Window 8s · waiting for audio</span>
                             </div>
                             <span class="session-id font-mono">SESSION LIVE-00482</span>
                         </div>
@@ -468,23 +493,27 @@
                         <div class="live-metrics-grid margin-top">
                             <div class="metric-card">
                                 <span class="metric-label">Human probability</span>
-                                <div class="metric-value text-green font-mono" id="live-val-human">12%</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill green" id="live-bar-human" style="width: 12%"></div></div>
+                                <div class="metric-value text-green font-mono" id="live-val-human">—</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill green" id="live-bar-human" style="width: 0%"></div></div>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 8px;" id="live-last-human">Last: —</div>
                             </div>
                             <div class="metric-card">
                                 <span class="metric-label">Synthetic probability</span>
-                                <div class="metric-value text-red font-mono" id="live-val-synthetic">88%</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-synthetic" style="width: 88%"></div></div>
+                                <div class="metric-value text-red font-mono" id="live-val-synthetic">—</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-synthetic" style="width: 0%"></div></div>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 8px;" id="live-last-synthetic">Last: —</div>
                             </div>
                             <div class="metric-card">
-                                <span class="metric-label">Clone probability</span>
-                                <div class="metric-value text-yellow font-mono" id="live-val-clone">91%</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill yellow" id="live-bar-clone" style="width: 91%"></div></div>
+                                <span class="metric-label">Speaker match</span>
+                                <div class="metric-value text-yellow font-mono" id="live-val-clone">—</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill yellow" id="live-bar-clone" style="width: 0%"></div></div>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 8px;" id="live-last-clone">Last: —</div>
                             </div>
                             <div class="metric-card">
                                 <span class="metric-label">Risk score</span>
-                                <div class="metric-value text-red font-mono" id="live-val-risk">93/100</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-risk" style="width: 93%"></div></div>
+                                <div class="metric-value text-red font-mono" id="live-val-risk">—</div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill red" id="live-bar-risk" style="width: 0%"></div></div>
+                                <div style="font-size: 11px; color: #64748b; margin-top: 8px;" id="live-last-risk">Last: —</div>
                             </div>
                         </div>
                     </div>
@@ -603,7 +632,7 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono">12,846</div>
+                            <div class="stat-value font-mono" id="rep-val-evals">0</div>
                             <div class="stat-sub">Monthly processing volume</div>
                         </div>
 
@@ -614,7 +643,7 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono">1,284</div>
+                            <div class="stat-value font-mono" id="rep-val-blocked">0</div>
                             <div class="stat-sub">Synthetic voice attempts prevented</div>
                         </div>
 
@@ -625,7 +654,7 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                                 </div>
                             </div>
-                            <div class="stat-value font-mono">₹ 14.2 Cr</div>
+                            <div class="stat-value font-mono" id="rep-val-loss">₹ 0 Cr</div>
                             <div class="stat-sub">Fraudulent wire attempts stopped</div>
                         </div>
                     </div>
@@ -683,7 +712,7 @@
 
             </main>
         </section>
-    </div>
+
 
     <!-- System Model Footer -->
     <footer class="satya-footer">

@@ -38,6 +38,9 @@ app.add_middleware(
 )
 
 # Include Routers
+from app.routers import enroll, detect, calls, audit, auth
+
+app.include_router(auth.router)
 app.include_router(enroll.router)
 app.include_router(detect.router)
 app.include_router(calls.router)

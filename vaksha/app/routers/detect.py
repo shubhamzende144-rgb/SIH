@@ -18,6 +18,8 @@ router = APIRouter(prefix="/v1", tags=["Detection"])
 
 from fastapi.responses import JSONResponse
 
+from app.routers.auth import get_current_user
+
 @router.post("/detect", response_model=None)
 async def detect_voice_integrity(
     audio: UploadFile = File(...),
@@ -26,7 +28,8 @@ async def detect_voice_integrity(
     intent: Optional[str] = Form("Fund Transfer"),
     amount_inr: float = Form(0.0),
     caller_number: Optional[str] = Form("+91 98200 12345"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: str = Depends(get_current_user)
 ):
     """
     Analyzes live audio sample against Engine A (AI deepfake detection) and Engine B (Speaker voiceprint matching).

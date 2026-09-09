@@ -67,6 +67,8 @@ def _sync_to_supabase(person_code: str, name: str, role_title: str,
         raise Exception(str(e))
 
 
+from app.routers.auth import get_current_user
+
 @router.post("/enroll")
 async def enroll_person_voice(
     person_code: str = Form(...),
@@ -75,7 +77,8 @@ async def enroll_person_voice(
     org: str = Form("Union Bank"),
     official_callback: str = Form(...),
     audio: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: str = Depends(get_current_user)
 ):
     """
     Enrolls a trusted person by extracting their speaker voiceprint embedding.

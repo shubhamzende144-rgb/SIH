@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+    ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@vaksha.local")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "Vaksha@2026")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "super-secret-vaksha-key")
     
     class Config:
         env_file = ".env"

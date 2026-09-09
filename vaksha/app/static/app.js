@@ -5,7 +5,60 @@ let activePersonaEmail = "security.admin@northstar.com";
 let waveformAnimId = null;
 let selectedAnalyzeBlob = null;
 
+// Intercept fetch to append Bearer token
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+    let [resource, config] = args;
+    if (typeof resource === 'string' && resource.startsWith('/v1/') && !resource.includes('/auth/login')) {
+        config = config || {};
+        config.headers = config.headers || {};
+        const token = localStorage.getItem("vaksha_token");
+        if (token) {
+            if (config.headers instanceof Headers) {
+                config.headers.set('Authorization', `Bearer ${token}`);
+            } else {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+        }
+        args[1] = config;
+    }
+    const response = await originalFetch(...args);
+    if (response.status === 401 && resource.startsWith('/v1/') && !resource.includes('/auth/login')) {
+        handleLogout();
+    }
+    return response;
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("vaksha_token");
+    if (token) {
+        document.getElementById("login-overlay").style.display = "none";
+        const startScreen = document.getElementById("start-screen");
+        if (startScreen) startScreen.style.display = "none";
+        document.getElementById("main-app").style.display = "flex";
+        initApp();
+        restoreSavedPage();
+    }
+});
+
+function restoreSavedPage() {
+    // Priority: hash route > sessionStorage > default overview
+    const hash = window.location.hash.replace('#/', '');
+    const stored = sessionStorage.getItem("vaksha_page");
+    const route = (hash && routeToTab[hash]) ? hash : (stored && routeToTab[stored]) ? stored : null;
+    if (route && routeToTab[route]) {
+        switchTab(routeToTab[route]);
+    }
+}
+
+window.addEventListener("hashchange", () => {
+    const hash = window.location.hash.replace('#/', '');
+    if (hash && routeToTab[hash]) {
+        switchTab(routeToTab[hash]);
+    }
+});
+
+function initApp() {
     initTabs();
     initWaveform();
     initJuryDemo();
@@ -15,7 +68,54 @@ document.addEventListener("DOMContentLoaded", () => {
     loadTrustedPeople();
     loadAlertsData();
     loadAuditTrail();
-});
+}
+
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    const errBox = document.getElementById("login-error");
+    const btn = document.getElementById("btn-login-submit");
+    
+    btn.disabled = true;
+    btn.innerText = "Authenticating...";
+    errBox.style.display = "none";
+
+    try {
+        const res = await originalFetch("/v1/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.detail || "Login failed");
+        }
+        
+        const data = await res.json();
+        localStorage.setItem("vaksha_token", data.token);
+        
+        document.getElementById("login-overlay").style.display = "none";
+        const startScreen = document.getElementById("start-screen");
+        if (startScreen) startScreen.style.display = "none";
+        document.getElementById("main-app").style.display = "flex";
+        initApp();
+        restoreSavedPage();
+        
+    } catch (e) {
+        errBox.innerText = e.message;
+        errBox.style.display = "block";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem("vaksha_token");
+    window.location.reload();
+}
 
 // Check System Health & Update Footer Status & Demo Banner
 async function checkHealthStatus() {
@@ -36,8 +136,14 @@ async function checkHealthStatus() {
             if (demoBanner) {
                 demoBanner.style.display = isMock ? "flex" : "none";
             }
+            const demoEngineBox = document.getElementById("demo-engine-box");
+            if (demoEngineBox) {
+                demoEngineBox.style.display = isMock ? "block" : "none";
+            }
         } else {
             if (demoBanner) demoBanner.style.display = "none";
+            const demoEngineBox = document.getElementById("demo-engine-box");
+            if (demoEngineBox) demoEngineBox.style.display = "none";
         }
     } catch (err) {
         console.warn("Could not fetch /health status:", err);
@@ -53,6 +159,13 @@ function toggleNotifications() {
 }
 
 // Tab Switcher Logic
+const tabToRoute = {
+    'tab-overview': 'overview', 'tab-analyze': 'analyze', 'tab-live': 'live',
+    'tab-trusted': 'trusted', 'tab-history': 'history', 'tab-alerts': 'alerts',
+    'tab-reports': 'reports', 'tab-settings': 'settings'
+};
+const routeToTab = Object.fromEntries(Object.entries(tabToRoute).map(([k,v]) => [v, k]));
+
 function switchTab(tabId) {
     const navItems = document.querySelectorAll(".sidebar-nav-item");
     const panels = document.querySelectorAll(".tab-panel");
@@ -72,6 +185,13 @@ function switchTab(tabId) {
             panel.classList.remove("active");
         }
     });
+
+    // Persist page
+    const route = tabToRoute[tabId];
+    if (route) {
+        sessionStorage.setItem("vaksha_page", route);
+        history.replaceState(null, "", `#/${route}`);
+    }
 
     if (tabId === "tab-overview") loadOverviewData();
     if (tabId === "tab-trusted") loadTrustedPeople();
@@ -171,27 +291,57 @@ function onFileSelected(input) {
     }
 }
 
-// Waveform Canvas Animation
+let audioCtx = null;
+let analyser = null;
+let dataArray = null;
+
 function initWaveform() {
     const canvas = document.getElementById("waveform-canvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
-    let step = 0;
+    // Start with a flat line before audio context exists
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#3b82f6";
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+}
+
+function startVisualizer(sourceNode, currentCtx) {
+    if (!analyser) {
+        analyser = currentCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+    }
+    
+    sourceNode.connect(analyser);
+    // Note: Do NOT connect analyser to currentCtx.destination for MIC, only for AUDIO playback!
+    // We will handle destination connection separately when setting up the source.
+
+    const canvas = document.getElementById("waveform-canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (waveformAnimId) cancelAnimationFrame(waveformAnimId);
+
     function draw() {
+        waveformAnimId = requestAnimationFrame(draw);
+        analyser.getByteTimeDomainData(dataArray);
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 2.5;
         ctx.strokeStyle = "#3b82f6";
         ctx.beginPath();
 
-        const width = canvas.width;
-        const height = canvas.height;
-        const sliceWidth = width / 100;
+        const sliceWidth = canvas.width * 1.0 / dataArray.length;
         let x = 0;
 
-        for (let i = 0; i < 100; i++) {
-            const v = Math.sin((i + step) * 0.15) * Math.cos((i * 0.1) + step * 0.2);
-            const y = (v * (height / 3)) + (height / 2);
+        for (let i = 0; i < dataArray.length; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = v * canvas.height / 2;
 
             if (i === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
@@ -199,9 +349,8 @@ function initWaveform() {
             x += sliceWidth;
         }
 
+        ctx.lineTo(canvas.width, canvas.height / 2);
         ctx.stroke();
-        step += 0.35;
-        waveformAnimId = requestAnimationFrame(draw);
     }
     draw();
 }
@@ -283,36 +432,46 @@ async function loadOverviewData() {
             repValLoss.innerText = `₹ ${amount.toFixed(1)} Cr`;
         }
 
-        // 3. UPDATE LIVE DETECTION TAB (if there is a latest call)
-        if (latestCall) {
-            document.getElementById("live-val-human").innerText = `${100 - Math.round(latestCall.ai_fake_score)}%`;
-            document.getElementById("live-bar-human").style.width = `${100 - Math.round(latestCall.ai_fake_score)}%`;
-
-            document.getElementById("live-val-synthetic").innerText = `${Math.round(latestCall.ai_fake_score)}%`;
-            document.getElementById("live-bar-synthetic").style.width = `${Math.round(latestCall.ai_fake_score)}%`;
-
-            document.getElementById("live-val-clone").innerText = `${Math.round(latestCall.speaker_match < 50 ? 91 : (100 - latestCall.speaker_match))}%`;
-            document.getElementById("live-bar-clone").style.width = `${Math.round(latestCall.speaker_match < 50 ? 91 : (100 - latestCall.speaker_match))}%`;
-
-            document.getElementById("live-val-risk").innerText = `${Math.round(latestCall.risk)}/100`;
-            document.getElementById("live-bar-risk").style.width = `${Math.round(latestCall.risk)}%`;
-        }
+        // Live tiles are NOT updated here — only updated by actual /v1/detect calls
 
         // 4. UPDATE CHART
         const chartContainer = document.getElementById("overview-bar-chart");
         const chartTotal = document.getElementById("overview-chart-total-events");
         if (chartContainer && calls.length > 0) {
             chartTotal.innerText = `${calls.length.toLocaleString()} events`;
-            chartContainer.innerHTML = `
-                <div class="chart-col" style="flex: 1; align-items: center;">
-                    <div class="bars" style="width: 40px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
-                        <span class="b-yellow" style="height:${(chartData.yellow/calls.length)*100}%"></span>
-                        <span class="b-red" style="height:${(chartData.red/calls.length)*100}%"></span>
-                        <span class="b-green" style="height:${(chartData.green/calls.length)*100}%"></span>
+            chartContainer.innerHTML = "";
+            
+            // Sort ascending to get chronological order for the chart (left to right)
+            const chronologicalCalls = [...calls].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+            const last20 = chronologicalCalls.slice(-20);
+            
+            last20.forEach(c => {
+                const date = new Date(c.created_at);
+                const timeLabel = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                
+                let bClass = "b-green";
+                let h = 100 - (c.risk || 0);
+                
+                if (c.decision === 'BLOCK') {
+                    bClass = "b-red";
+                    h = c.risk;
+                } else if (c.decision === 'STEP_UP') {
+                    bClass = "b-yellow";
+                    h = c.risk;
+                }
+
+                h = Math.max(10, Math.min(h, 100)); // cap height
+
+                chartContainer.innerHTML += `
+                    <div class="chart-col">
+                        <div class="bars" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <span class="${bClass}" style="height:${h}%"></span>
+                        </div>
+                        <span class="time-label font-mono" style="font-size:10px">${timeLabel}</span>
                     </div>
-                    <span class="time-label font-mono">ALL</span>
-                </div>
-            `;
+                `;
+            });
+            
         } else if (chartContainer) {
             chartContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748b; font-size: 13px;">No data to chart</div>`;
         }
@@ -368,9 +527,8 @@ async function submitVoiceAnalysis(e) {
     }
 
     if (!audioBlob) {
-        const res = await fetch("/data/samples/cfo_clone.wav");
-        audioBlob = await res.blob();
-        fileName = "cfo_clone.wav";
+        alert("Please upload or record audio first.");
+        return;
     }
 
     const formData = new FormData();
@@ -387,7 +545,14 @@ async function submitVoiceAnalysis(e) {
             body: formData
         });
 
-        if (!response.ok) throw new Error(`POST /v1/detect error ${response.status}`);
+        if (!response.ok) {
+            let errMsg = `POST /v1/detect error ${response.status}`;
+            try {
+                const errData = await response.json();
+                errMsg = errData.error || errData.detail || errMsg;
+            } catch (e) {}
+            throw new Error(errMsg);
+        }
         const data = await response.json();
 
         // Show render result box inline
@@ -417,21 +582,53 @@ async function submitVoiceAnalysis(e) {
     }
 }
 
-// Jury Demo Panel (Live Detection View)
 function initJuryDemo() {
     const btnReal = document.getElementById("btn-demo-real");
     const btnClone = document.getElementById("btn-demo-clone");
     const btnImpostor = document.getElementById("btn-demo-impostor");
 
-    if (btnReal) btnReal.addEventListener("click", () => triggerLiveDemoSample("cfo_real.wav", "UB-CFO-0192"));
-    if (btnClone) btnClone.addEventListener("click", () => triggerLiveDemoSample("cfo_clone.wav", "UB-CFO-0192"));
-    if (btnImpostor) btnImpostor.addEventListener("click", () => triggerLiveDemoSample("impostor.wav", "UB-CFO-0192"));
+    if (btnReal) btnReal.addEventListener("click", (e) => triggerLiveDemoSample(e.target, "cfo_real.wav", "UB-CFO-0192"));
+    if (btnClone) btnClone.addEventListener("click", (e) => triggerLiveDemoSample(e.target, "cfo_clone.wav", "UB-CFO-0192"));
+    if (btnImpostor) btnImpostor.addEventListener("click", (e) => triggerLiveDemoSample(e.target, "impostor.wav", "UB-CFO-0192"));
 }
 
-async function triggerLiveDemoSample(fileName, personCode) {
+let currentJuryAudio = null;
+
+async function triggerLiveDemoSample(btn, fileName, personCode) {
+    if (currentJuryAudio) {
+        currentJuryAudio.pause();
+        currentJuryAudio = null;
+    }
+    
+    // Disable button
+    const origText = btn.innerText;
+    btn.innerText = "⏳ Processing...";
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+
+    const listeningPill = document.getElementById("live-listening-pill");
+    const decisionBadge = document.getElementById("live-decision-badge");
+    
+    if (listeningPill) listeningPill.style.display = "inline-flex";
+    if (decisionBadge) decisionBadge.style.display = "none";
+
     try {
         const audioRes = await fetch(`/data/samples/${fileName}`);
+        if (!audioRes.ok) throw new Error("Audio file missing on server");
         const audioBlob = await audioRes.blob();
+
+        // Play the audio for the jury
+        currentJuryAudio = new Audio(URL.createObjectURL(audioBlob));
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const sourceNode = audioCtx.createMediaElementSource(currentJuryAudio);
+        startVisualizer(sourceNode, audioCtx);
+        sourceNode.connect(audioCtx.destination); // Connect source to speakers
+        currentJuryAudio.play();
+        
+        currentJuryAudio.onended = () => {
+            if (listeningPill) listeningPill.style.display = "none";
+            initWaveform(); // Reset to flatline
+        };
 
         const formData = new FormData();
         formData.append("audio", audioBlob, fileName);
@@ -454,15 +651,49 @@ async function triggerLiveDemoSample(fileName, personCode) {
 
     } catch (err) {
         alert(`Live Detection Error: ${err.message}`);
+        if (listeningPill) listeningPill.style.display = "none";
+        initWaveform();
+    } finally {
+        btn.innerText = origText;
+        btn.disabled = false;
+        btn.style.opacity = "1";
     }
 }
 
-function updateLiveMetricsUI(data) {
-    const humanProb = Math.round(data.trust);
-    const aiProb = Math.round(data.breakdown.ai_fake_score);
-    const cloneProb = Math.round(data.breakdown.speaker_match);
-    const riskScore = Math.round(data.risk);
+let liveDetectHistory = [];
 
+function updateLiveMetricsUI(data, isLiveMic = false) {
+    let humanProb, aiProb, cloneProb, riskScore;
+
+    if (isLiveMic) {
+        liveDetectHistory.push(data);
+        if (liveDetectHistory.length > 3) liveDetectHistory.shift();
+
+        // Smooth
+        const avgAi = liveDetectHistory.reduce((sum, d) => sum + d.breakdown.ai_fake_score, 0) / liveDetectHistory.length;
+        const avgClone = liveDetectHistory.reduce((sum, d) => sum + d.breakdown.speaker_match, 0) / liveDetectHistory.length;
+        const avgRisk = liveDetectHistory.reduce((sum, d) => sum + d.risk, 0) / liveDetectHistory.length;
+
+        humanProb = 100 - Math.round(avgAi);
+        aiProb = Math.round(avgAi);
+        cloneProb = Math.round(avgClone);
+        riskScore = Math.round(avgRisk);
+        
+        const sessionSub = document.getElementById("live-session-sub");
+        if (sessionSub) sessionSub.innerText = `Window 8s · last detect ${data.call_ref}`;
+
+    } else {
+        liveDetectHistory = [data]; // Reset window for Jury demo so it's perfectly stable
+        humanProb = 100 - Math.round(data.breakdown.ai_fake_score);
+        aiProb = Math.round(data.breakdown.ai_fake_score);
+        cloneProb = Math.round(data.breakdown.speaker_match);
+        riskScore = Math.round(data.risk);
+        
+        const sessionSub = document.getElementById("live-session-sub");
+        if (sessionSub) sessionSub.innerText = `Jury Demo · last detect ${data.call_ref}`;
+    }
+
+    // Set Main Smooth Values
     document.getElementById("live-val-human").innerText = `${humanProb}%`;
     document.getElementById("live-val-synthetic").innerText = `${aiProb}%`;
     document.getElementById("live-val-clone").innerText = `${cloneProb}%`;
@@ -472,6 +703,114 @@ function updateLiveMetricsUI(data) {
     document.getElementById("live-bar-synthetic").style.width = `${aiProb}%`;
     document.getElementById("live-bar-clone").style.width = `${cloneProb}%`;
     document.getElementById("live-bar-risk").style.width = `${riskScore}%`;
+
+    // Set Sub 'Last' Values
+    const lastHuman = 100 - Math.round(data.breakdown.ai_fake_score);
+    const lastAi = Math.round(data.breakdown.ai_fake_score);
+    const lastClone = Math.round(data.breakdown.speaker_match);
+    const lastRisk = Math.round(data.risk);
+
+    const elLastHuman = document.getElementById("live-last-human");
+    const elLastSynthetic = document.getElementById("live-last-synthetic");
+    const elLastClone = document.getElementById("live-last-clone");
+    const elLastRisk = document.getElementById("live-last-risk");
+
+    if (elLastHuman) elLastHuman.innerText = `Last: ${lastHuman}%`;
+    if (elLastSynthetic) elLastSynthetic.innerText = `Last: ${lastAi}%`;
+    if (elLastClone) elLastClone.innerText = `Last: ${lastClone}%`;
+    if (elLastRisk) elLastRisk.innerText = `Last: ${lastRisk}/100`;
+
+    const decisionBadge = document.getElementById("live-decision-badge");
+    if (decisionBadge) {
+        decisionBadge.innerText = data.final_decision;
+        decisionBadge.style.display = "inline-flex";
+        decisionBadge.className = data.final_decision === 'BLOCK' ? 'badge badge-highrisk margin-left' : (data.final_decision === 'STEP_UP' ? 'badge badge-suspicious margin-left' : 'badge badge-genuine margin-left');
+    }
+}
+
+let liveMicStream = null;
+let liveMicRecorder = null;
+let liveMicInterval = null;
+
+async function toggleLiveMic() {
+    const btn = document.getElementById("live-mic-btn");
+    const dot = document.getElementById("live-mic-dot");
+    const text = document.getElementById("live-mic-text");
+    const listeningPill = document.getElementById("live-listening-pill");
+
+    if (liveMicStream) {
+        if (liveMicRecorder && liveMicRecorder.state !== "inactive") {
+            liveMicRecorder.stop();
+        }
+        clearInterval(liveMicInterval);
+        liveMicStream.getTracks().forEach(t => t.stop());
+        liveMicStream = null;
+        liveMicRecorder = null;
+        
+        text.innerText = "START LIVE MIC";
+        dot.style.backgroundColor = "#64748b";
+        btn.style.boxShadow = "none";
+        if (listeningPill) listeningPill.style.display = "none";
+        initWaveform();
+        return;
+    }
+
+    try {
+        liveMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const sourceNode = audioCtx.createMediaStreamSource(liveMicStream);
+        startVisualizer(sourceNode, audioCtx);
+        
+        text.innerText = "MIC ACTIVE";
+        dot.style.backgroundColor = "#ef4444";
+        btn.style.boxShadow = "0 0 10px rgba(239, 68, 68, 0.5)";
+        if (listeningPill) listeningPill.style.display = "inline-flex";
+
+        function startChunk() {
+            if (!liveMicStream) return;
+            let chunks = [];
+            liveMicRecorder = new MediaRecorder(liveMicStream);
+            liveMicRecorder.ondataavailable = e => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+            liveMicRecorder.onstop = async () => {
+                if (chunks.length === 0) return;
+                const chunkBlob = new Blob(chunks, { type: 'audio/webm' });
+                // We only upload if the recording lasted enough time to be useful
+                if (chunkBlob.size > 500) {
+                    const formData = new FormData();
+                    formData.append("audio", chunkBlob, "live_chunk.webm");
+                    formData.append("person_code", "UB-CFO-0192");
+
+                    try {
+                        const res = await fetch("/v1/detect", { method: "POST", body: formData });
+                        if (res.ok) {
+                            const data = await res.json();
+                            updateLiveMetricsUI(data, true);
+                            loadOverviewData();
+                            loadAuditTrail();
+                            loadAlertsData();
+                        }
+                    } catch(err) { console.error("Live chunk error", err); }
+                }
+            };
+            liveMicRecorder.start();
+        }
+
+        startChunk();
+
+        // Every 8 seconds, stop current recorder (triggers upload) and start a new one
+        liveMicInterval = setInterval(() => {
+            if (liveMicRecorder && liveMicRecorder.state === "recording") {
+                liveMicRecorder.stop();
+                startChunk();
+            }
+        }, 8000);
+
+    } catch (e) {
+        alert("Microphone error: " + e.message);
+    }
 }
 
 let enrollAudioBlob = null;

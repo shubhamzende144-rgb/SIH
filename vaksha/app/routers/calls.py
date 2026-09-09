@@ -8,7 +8,9 @@ from app.models import Person, Call, User, Action
 from app.schemas import PersonSchema, CallSchema, ActionRequest, ActionResponse
 from app.services.audit import record_audit_event
 
-router = APIRouter(prefix="/v1", tags=["Calls & People"])
+from app.routers.auth import get_current_user
+
+router = APIRouter(prefix="/v1", tags=["Calls & People"], dependencies=[Depends(get_current_user)])
 
 @router.get("/people", response_model=List[PersonSchema])
 def list_enrolled_people(db: Session = Depends(get_db)):

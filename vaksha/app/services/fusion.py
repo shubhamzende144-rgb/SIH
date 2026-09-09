@@ -37,22 +37,30 @@ def fuse_risk_and_decision(
             "action": action
         }
 
-    # Enrolled risk fusion equation:
-    # risk = 0.55 * ai_fake_score + 0.45 * situation_bonus
+    # Enrolled risk fusion
+    # High speaker_match means caller IS the enrolled person.
+    # Low speaker_match means caller is NOT the enrolled person.
     if speaker_match >= 70.0 and ai_fake_score >= 60.0:
-        situation_bonus = 100.0  # Clone of enrolled person (CRITICAL RISK)
-        meaning = f"Sounds like {person_name}, but voice is AI-generated"
+        # Clone attack: sounds like enrolled person but voice is AI-generated
+        risk = 0.40 * ai_fake_score + 0.60 * (100.0 - speaker_match + ai_fake_score)
+        risk = max(70.0, min(100.0, risk))  # always BLOCK
+        meaning = f"Sounds like {person_name}, but voice is AI-generated (clone attack)"
     elif speaker_match < 50.0:
-        situation_bonus = 80.0   # Not the claimed person (IMPOSTOR)
+        # Impostor: voice does not match enrolled person
+        risk = 40.0 + 0.30 * (100.0 - speaker_match) + 0.20 * ai_fake_score
+        risk = max(40.0, min(85.0, risk))  # STEP_UP or BLOCK
         meaning = f"Caller voice does not match enrolled profile of {person_name}"
     else:
-        situation_bonus = 20.0   # Enrolled speaker with low/normal AI artifacts
+        # Genuine enrolled speaker with matching voiceprint
+        # High match + low AI → near-zero risk
+        identity_confidence = speaker_match / 100.0
+        risk = ai_fake_score * (1.0 - identity_confidence * 0.9)
+        risk = max(0.0, min(39.9, risk))  # always ALLOW
         if ai_fake_score < 40.0:
             meaning = f"Authentic voice match for {person_name}"
         else:
             meaning = f"Speaker matches {person_name} with mild acoustic anomalies"
 
-    risk = 0.55 * ai_fake_score + 0.45 * situation_bonus
     risk = max(0.0, min(100.0, round(risk, 1)))
     trust = max(0.0, min(100.0, round(100.0 - risk, 1)))
 

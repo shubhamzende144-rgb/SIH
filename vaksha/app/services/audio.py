@@ -25,6 +25,18 @@ def load_audio_from_bytes(audio_bytes: bytes, filename: str = "") -> tuple[np.nd
         tmp_path = tmp.name
 
     try:
+        if suffix != ".wav":
+            wav_path = tmp_path + ".wav"
+            import subprocess
+            subprocess.run(
+                ["ffmpeg", "-y", "-i", tmp_path, "-ar", str(TARGET_SR), "-ac", "1", wav_path],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            if os.path.exists(wav_path):
+                os.remove(tmp_path)
+                tmp_path = wav_path
+
         y, sr = librosa.load(tmp_path, sr=TARGET_SR, mono=True)
         duration_sec = float(librosa.get_duration(y=y, sr=sr))
         return y, sr, duration_sec
