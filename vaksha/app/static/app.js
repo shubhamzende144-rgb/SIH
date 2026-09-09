@@ -111,12 +111,56 @@ function toggleAnalyzeTab(mode) {
         if (btnRecord) btnRecord.classList.add("active");
         if (btnUpload) btnUpload.classList.remove("active");
         if (dropzone) dropzone.innerHTML = `
-            <div class="cloud-icon-circle" style="background:rgba(239,68,68,0.15)">
+            <div class="cloud-icon-circle" id="record-btn-circle" style="background:rgba(239,68,68,0.15); cursor:pointer;" onclick="toggleRecording()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
             </div>
-            <h3>Click to Record Live Audio Sample</h3>
-            <p>Speak clearly into your microphone for 5-10 seconds</p>
+            <h3 id="record-status-text">Click icon to Record</h3>
+            <p id="record-sub-text">Speak clearly into your microphone for 5-10 seconds</p>
         `;
+    }
+}
+
+let analyzeMediaRecorder;
+let analyzeRecordedChunks = [];
+let isAnalyzeRecording = false;
+
+async function toggleRecording() {
+    const statusText = document.getElementById("record-status-text");
+    const subText = document.getElementById("record-sub-text");
+    const iconContainer = document.getElementById("record-btn-circle");
+
+    if (!isAnalyzeRecording) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            analyzeMediaRecorder = new MediaRecorder(stream);
+            analyzeRecordedChunks = [];
+            
+            analyzeMediaRecorder.ondataavailable = e => {
+                if (e.data.size > 0) analyzeRecordedChunks.push(e.data);
+            };
+            
+            analyzeMediaRecorder.onstop = () => {
+                selectedAnalyzeBlob = new Blob(analyzeRecordedChunks, { type: 'audio/webm' });
+                selectedAnalyzeBlob.name = 'recorded_sample.webm';
+                statusText.innerText = "Recording saved!";
+                subText.innerText = "You can now run voice analysis.";
+                iconContainer.style.background = "rgba(16, 185, 129, 0.15)";
+                iconContainer.querySelector("svg").style.stroke = "#10b981";
+            };
+
+            analyzeMediaRecorder.start();
+            isAnalyzeRecording = true;
+            statusText.innerText = "Recording in progress...";
+            subText.innerText = "Click icon again to stop.";
+            iconContainer.style.background = "rgba(239, 68, 68, 0.5)";
+            
+        } catch (e) {
+            alert("Error accessing microphone: " + e.message);
+        }
+    } else {
+        analyzeMediaRecorder.stop();
+        analyzeMediaRecorder.stream.getTracks().forEach(t => t.stop());
+        isAnalyzeRecording = false;
     }
 }
 
@@ -199,11 +243,23 @@ async function loadOverviewData() {
 
         let aiCount = 0;
         let riskCount = 0;
+        let chartData = { green: 0, red: 0, yellow: 0 };
+        let latestCall = null;
+
         calls.forEach(c => {
             if (c.ai_fake_score > 50) aiCount++;
             if (c.risk > 70) riskCount++;
+
+            if (c.decision === 'ALLOW') chartData.green++;
+            else if (c.decision === 'BLOCK') chartData.red++;
+            else chartData.yellow++;
+
+            if (!latestCall || new Date(c.created_at) > new Date(latestCall.created_at)) {
+                latestCall = c;
+            }
         });
 
+        // 1. UPDATE OVERVIEW CARDS
         const valAnalyzed = document.getElementById("ov-val-analyzed");
         const valAi = document.getElementById("ov-val-ai");
         const valRisk = document.getElementById("ov-val-risk");
@@ -214,13 +270,63 @@ async function loadOverviewData() {
         if (valRisk) valRisk.innerText = riskCount.toLocaleString();
         if (valPeople) valPeople.innerText = people.length.toLocaleString();
 
+        // 2. UPDATE REPORTS TAB
+        const repValEvals = document.getElementById("rep-val-evals");
+        const repValBlocked = document.getElementById("rep-val-blocked");
+        const repValLoss = document.getElementById("rep-val-loss");
+        
+        if (repValEvals) repValEvals.innerText = calls.length.toLocaleString();
+        if (repValBlocked) repValBlocked.innerText = chartData.red.toLocaleString();
+        if (repValLoss) {
+            // Calculate a fake loss value based on actual events for demo purposes
+            const amount = chartData.red * 1.2;
+            repValLoss.innerText = `₹ ${amount.toFixed(1)} Cr`;
+        }
+
+        // 3. UPDATE LIVE DETECTION TAB (if there is a latest call)
+        if (latestCall) {
+            document.getElementById("live-val-human").innerText = `${100 - Math.round(latestCall.ai_fake_score)}%`;
+            document.getElementById("live-bar-human").style.width = `${100 - Math.round(latestCall.ai_fake_score)}%`;
+
+            document.getElementById("live-val-synthetic").innerText = `${Math.round(latestCall.ai_fake_score)}%`;
+            document.getElementById("live-bar-synthetic").style.width = `${Math.round(latestCall.ai_fake_score)}%`;
+
+            document.getElementById("live-val-clone").innerText = `${Math.round(latestCall.speaker_match < 50 ? 91 : (100 - latestCall.speaker_match))}%`;
+            document.getElementById("live-bar-clone").style.width = `${Math.round(latestCall.speaker_match < 50 ? 91 : (100 - latestCall.speaker_match))}%`;
+
+            document.getElementById("live-val-risk").innerText = `${Math.round(latestCall.risk)}/100`;
+            document.getElementById("live-bar-risk").style.width = `${Math.round(latestCall.risk)}%`;
+        }
+
+        // 4. UPDATE CHART
+        const chartContainer = document.getElementById("overview-bar-chart");
+        const chartTotal = document.getElementById("overview-chart-total-events");
+        if (chartContainer && calls.length > 0) {
+            chartTotal.innerText = `${calls.length.toLocaleString()} events`;
+            chartContainer.innerHTML = `
+                <div class="chart-col" style="flex: 1; align-items: center;">
+                    <div class="bars" style="width: 40px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <span class="b-yellow" style="height:${(chartData.yellow/calls.length)*100}%"></span>
+                        <span class="b-red" style="height:${(chartData.red/calls.length)*100}%"></span>
+                        <span class="b-green" style="height:${(chartData.green/calls.length)*100}%"></span>
+                    </div>
+                    <span class="time-label font-mono">ALL</span>
+                </div>
+            `;
+        } else if (chartContainer) {
+            chartContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748b; font-size: 13px;">No data to chart</div>`;
+        }
+
+        // 5. UPDATE RECENT EVENTS TABLE
         const tbody = document.getElementById("overview-events-body");
         if (tbody) {
             if (calls.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center text-dim" style="padding: 30px;">No detection events recorded yet. Perform an analysis in Analyze Voice.</td></tr>`;
             } else {
                 tbody.innerHTML = "";
-                calls.slice(0, 5).forEach(c => {
+                // Sort calls descending
+                const sortedCalls = [...calls].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+                sortedCalls.slice(0, 5).forEach(c => {
                     const tr = document.createElement("tr");
                     const timeStr = c.created_at ? new Date(c.created_at).toLocaleTimeString() : "--:--:--";
                     const riskVal = Math.round(c.risk || 0);
@@ -254,7 +360,7 @@ async function submitVoiceAnalysis(e) {
     const selectedPersonCode = document.getElementById("analyze-person-select")?.value || "";
 
     let audioBlob = selectedAnalyzeBlob;
-    let fileName = "sample.wav";
+    let fileName = audioBlob ? (audioBlob.name || "sample.wav") : "sample.wav";
 
     if (fileInput && fileInput.files[0]) {
         audioBlob = fileInput.files[0];
@@ -298,15 +404,16 @@ async function submitVoiceAnalysis(e) {
         const decisionBadge = document.getElementById("res-decision-badge");
         if (decisionBadge) {
             decisionBadge.innerText = data.final_decision;
-            decisionBadge.className = `badge ${data.final_decision === 'BLOCK' ? 'badge-highrisk' : (data.final_decision === 'STEP_UP' ? 'badge-suspicious' : 'badge-genuine')}`;
+            decisionBadge.className = data.final_decision === 'BLOCK' ? 'badge badge-highrisk' : (data.final_decision === 'STEP_UP' ? 'badge badge-suspicious' : 'badge badge-genuine');
         }
 
-        // Refresh dynamic UI views across all tabs
+        // Refresh all real-time dashboards
         loadOverviewData();
-        loadAlertsData();
         loadAuditTrail();
-    } catch (err) {
-        alert(`Voice Analysis Error: ${err.message}`);
+        loadAlertsData();
+
+    } catch (e) {
+        alert(`Voice Analysis Error: ${e.message}`);
     }
 }
 
@@ -339,6 +446,12 @@ async function triggerLiveDemoSample(fileName, personCode) {
         const data = await response.json();
         
         updateLiveMetricsUI(data);
+
+        // Refresh dynamic UI views across all tabs
+        loadOverviewData();
+        loadAuditTrail();
+        loadAlertsData();
+
     } catch (err) {
         alert(`Live Detection Error: ${err.message}`);
     }
@@ -399,8 +512,9 @@ async function toggleEnrollRecord(e) {
                 if (event.data.size > 0) recordedChunks.push(event.data);
             };
             mediaRecorder.onstop = () => {
-                enrollAudioBlob = new Blob(recordedChunks, { type: "audio/wav" });
-                if (label) label.innerText = `Recorded Audio Sample (${(enrollAudioBlob.size / 1024).toFixed(1)} KB WAV)`;
+                enrollAudioBlob = new Blob(recordedChunks, { type: "audio/webm" });
+                enrollAudioBlob.name = 'enroll_sample.webm';
+                if (label) label.innerText = `Recorded Audio Sample (${(enrollAudioBlob.size / 1024).toFixed(1)} KB WebM)`;
             };
             mediaRecorder.start();
             isRecordingEnroll = true;
@@ -467,6 +581,7 @@ async function submitVoiceEnrollment(e) {
         enrollAudioBlob = null;
         loadTrustedPeople();
         loadOverviewData();
+        loadAuditTrail();
     } catch (err) {
         alert(`Enrollment Error: ${err.message}`);
     } finally {

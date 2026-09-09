@@ -16,7 +16,9 @@ from app.services.audit import record_audit_event
 
 router = APIRouter(prefix="/v1", tags=["Detection"])
 
-@router.post("/detect", response_model=DetectResponse)
+from fastapi.responses import JSONResponse
+
+@router.post("/detect", response_model=None)
 async def detect_voice_integrity(
     audio: UploadFile = File(...),
     person_code: Optional[str] = Form(None),
@@ -33,12 +35,14 @@ async def detect_voice_integrity(
     """
     audio_bytes = await audio.read()
     if not audio_bytes:
-        raise HTTPException(status_code=400, detail="Empty audio file provided.")
+        return JSONResponse(status_code=400, content={"ok": False, "error": "audio too short"})
 
     try:
         y, sr, duration_sec = load_audio_from_bytes(audio_bytes, filename=audio.filename or "")
+        if duration_sec < 1.0:
+            return JSONResponse(status_code=400, content={"ok": False, "error": "audio too short"})
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to process audio file: {str(e)}")
+        return JSONResponse(status_code=400, content={"ok": False, "error": f"Failed to process audio file: {str(e)}"})
 
     # Engine A: AI vs Human Fake Score
     ai_fake_score = predict_ai_fake(y, sr)
